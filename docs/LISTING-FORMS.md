@@ -1,0 +1,33 @@
+# Listing properties, open plots and rentals
+
+Open **Sell** or **Manage listings → Add a listing**. One regular account can buy, rent and publish listings.
+
+| Form | Supported property | Specific information |
+| --- | --- | --- |
+| Sell a property | Apartment, villa, house, building, commercial building, office, shop | Selling price, built-up area, residential bedroom/bathroom counts and amenities |
+| Sell an open plot | Residential, commercial or agricultural land | Area in square feet, square yards or acres; optional facing, road width and owner-supplied layout/authority approval |
+| Rent a property | All residential and commercial types above | Monthly rent, deposit, furnishing and optional availability date |
+
+Commercial forms omit bedrooms and make bathrooms optional. Plots omit bedrooms and bathrooms and support sale. Each form follows **Details → Location → Photos → Review**. Back retains entries; editing opens the appropriate form with existing photos and location.
+
+## Map location
+
+Enter the city, state, address and PIN code. Suggestions cover the five demo cities; another Indian city can be typed. Select the property entrance by clicking the map, dragging the pin, using your device location, or panning and choosing **Place pin at map centre**. Fine-tune buttons support keyboard users. Coordinates are saved automatically.
+
+Device location asks for permission when its button is clicked. Map tiles need internet access; a pin can still be selected if tiles fail. The owner is responsible for the position.
+
+## Image uploads
+
+Choose or drag multiple **JPEG, PNG or WebP** images, up to **10 per listing** and **5 MB each**. Previews and progress appear immediately. Remove photos or choose **Make cover**; at least one photo is required.
+
+Authenticated uploads check actual image contents and decoded dimensions, apply camera orientation, strip metadata and produce a JPEG up to 2400 pixels per edge. Random filenames avoid using original names. Images can only be attached by their uploading account, and listing photos are publicly served through /api/uploads/{id}.jpg. Existing hosted HTTPS photos and sample image paths continue working on older listings.
+
+Image metadata is in PostgreSQL; files persist in the property_images Docker volume mounted at /app/uploads. Restarting or rebuilding retains them. Back up this volume with PostgreSQL. Photos from abandoned drafts or removed from a form remain stored; automated cleanup and managed Azure Blob storage remain future work. The Azure VM overlay inherits the local image volume.
+
+## Discovery and details
+
+**Open plots** in the main navigation opens plot search. Property-type filters include all residential/commercial types and plots; plot/commercial searches omit bedroom filters. Cards, maps, favourites and enquiries support all types.
+
+Plots show land area, use, facing, road width and owner-supplied approval without fictitious bedroom counts. Rental details show deposit, furnishing and availability. Plot areas retain their entered units and are normalised to square feet for sorting and minimum-area search. Approval text is supplied by the owner and is not independently verified.
+
+The original 100 synthetic homes are preserved. Additional owner properties and plots do not replace those samples.

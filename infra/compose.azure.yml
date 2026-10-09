@@ -1,0 +1,25 @@
+services:
+  web:
+    ports: !reset []
+  api:
+    environment:
+      COOKIE_SECURE: 'true'
+      DEMO_ACCOUNTS_ENABLED: 'false'
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      PORTAL_DOMAIN: ${PORTAL_DOMAIN:?Set PORTAL_DOMAIN to a domain pointing at the VM}
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./infra/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  caddy_data:
+  caddy_config:

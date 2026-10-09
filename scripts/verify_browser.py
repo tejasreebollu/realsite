@@ -1,0 +1,147 @@
+"""Run UI smoke checks with project-local Playwright and installed Chrome."""
+import json
+from pathlib import Path
+import secrets
+import sys
+import time
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / ".tools"))
+from playwright.sync_api import sync_playwright, expect
+
+ARTIFACTS = ROOT / "artifacts"
+ARTIFACTS.mkdir(exist_ok=True)
+BASE = "http://localhost:8090"
+errors = []
+checks = []
+
+
+def check(label):
+    checks.append(label)
+    print("PASS:", label, flush=True)
+
+
+def no_overflow(page, label):
+    sizes = page.evaluate("({width: innerWidth, scroll: document.documentElement.scrollWidth})")
+    assert sizes["scroll"] <= sizes["width"], (label, sizes)
+    check(label + " has no horizontal overflow")
+
+
+with sync_playwright() as p:
+    browser = p.chromium.launch(executable_path=r"C:\Program Files\Google\Chrome\Application\chrome.exe", headless=True)
+    context = browser.new_context(viewport={"width": 1920, "height": 1080})
+    page = context.new_page()
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(BASE, wait_until="networkidle")
+    expect(page.locator('.property-card').first).to_be_visible()
+    no_overflow(page, "Desktop homepage")
+    assert page.locator('.property-card').count() >= 24
+    assert page.locator('img').evaluate_all('(images) => images.filter(i => i.complete && !i.naturalWidth).length') == 0
+    page.screenshot(path=str(ARTIFACTS / "desktop-home.png"), full_page=True)
+    check("Homepage loads three listing carousels and property images")
+    page.get_by_role('button', name='Buy', exact=True).click()
+    expect(page.locator('.results-grid .property-card')).to_have_count(12)
+    expect(page.locator('.price-marker')).to_have_count(12)
+    page.screenshot(path=str(ARTIFACTS / "desktop-search.png"))
+    check("Sale search shows 12 homes and geographic price markers")
+    page.get_by_role('button', name='Beds & baths').click()
+    page.locator('.filter-popover .segment').first.get_by_role('button', name='4+', exact=True).click()
+    page.locator('.filter-popover').get_by_role('button', name='Apply', exact=True).click()
+    expect(page.locator('.results-grid .property-card')).to_have_count(4)
+    check("Bedroom filter changes actual search results")
+    page.get_by_role('button', name='Reset', exact=True).click()
+    expect(page.locator('.results-grid .property-card')).to_have_count(12)
+    page.locator('.results-grid .favorite-button').first.click()
+    expect(page.get_by_role('dialog', name='Welcome home')).to_be_visible()
+    page.get_by_role('button', name='Create account', exact=True).click()
+    page.get_by_label('Your name', exact=True).fill('Browser Test Owner')
+    page.get_by_label('Email address', exact=True).fill(f'browser-{int(time.time())}@example.com')
+    page.get_by_label('Password', exact=True).fill('UiTest-' + secrets.token_hex(12))
+    expect(page.get_by_label('Account type')).to_have_count(0)
+    page.get_by_role('button', name='Create your account', exact=True).click()
+    expect(page.get_by_role('dialog', name='Welcome home')).not_to_be_visible()
+    expect(page.locator('.results-grid .favorite-button').first).to_have_attribute('aria-pressed', 'true')
+    expect(page.locator('.account .role-badge')).to_have_text('user')
+    check("Sign-up creates a user session and completes pending favourite action")
+    page.get_by_role('button', name='Save search', exact=True).click()
+    expect(page.get_by_role('status')).to_contain_text('Search saved')
+    page.get_by_role('button', name='Updates', exact=True).click()
+    expect(page.locator('.saved-search-list article')).to_have_count(1)
+    page.get_by_role('button', name='View homes').click()
+    expect(page.locator('.results-grid .property-card')).to_have_count(12)
+    check("Saved search persists and restores its filters")
+    page.locator('.results-grid .image-open').first.click()
+    expect(page.locator('.wide-modal')).to_be_visible()
+    page.get_by_label('Mobile number', exact=True).fill('9876543210')
+    page.get_by_role('button', name='Record demo enquiry', exact=True).click()
+    expect(page.locator('.enquiry-success')).to_contain_text('Demo enquiry recorded')
+    page.get_by_role('button', name='Close dialog', exact=True).click()
+    page.get_by_role('button', name='Inbox', exact=True).click()
+    expect(page.locator('.inquiry-list article')).to_have_count(1)
+    check("Enquiry is recorded and visible in the sender inbox")
+    page.get_by_role('button', name='Favourites', exact=True).click()
+    expect(page.locator('.standalone-grid .property-card')).to_have_count(1)
+    check("Favourites persist across pages")
+    page.get_by_role('button', name='Manage listings', exact=True).click()
+    page.get_by_role('button', name='Add a listing', exact=True).click()
+    page.get_by_role('button', name='Sell a property', exact=True).click()
+    page.get_by_label('Listing title', exact=True).fill('Browser test apartment in Hyderabad')
+    page.get_by_label('Selling price (₹)', exact=True).fill('9500000')
+    page.get_by_label('Built-up area (sqft)', exact=True).fill('1500')
+    page.get_by_label('What makes this property special?', exact=True).fill('This is an automated test listing with a bright balcony and secure parking.')
+    page.get_by_role('button', name='Next: location', exact=True).click()
+    page.get_by_label('Address', exact=True).fill('22, Test Road, Gachibowli')
+    page.get_by_label('PIN code', exact=True).fill('500032')
+    page.get_by_role('button', name='Place pin at map centre', exact=True).click()
+    page.get_by_role('button', name='Next: photos', exact=True).click()
+    page.get_by_label('Upload property photos', exact=True).set_input_files(str(ROOT / 'frontend/public/images/home-1.jpg'))
+    expect(page.locator('.listing-photo-grid figure')).to_have_count(1)
+    page.get_by_role('button', name='Next: review', exact=True).click()
+    page.get_by_role('button', name='Publish listing', exact=True).click()
+    expect(page.locator('.managed-property')).to_have_count(1)
+    check("Owner can publish a listing with a map pin and uploaded photo")
+    page.get_by_role('button', name='Edit listing', exact=True).click()
+    page.get_by_label('Selling price (₹)', exact=True).fill('9000000')
+    page.get_by_role('button', name='Next: location', exact=True).click()
+    page.get_by_role('button', name='Next: photos', exact=True).click()
+    expect(page.locator('.listing-photo-grid figure')).to_have_count(1)
+    page.get_by_role('button', name='Next: review', exact=True).click()
+    page.get_by_role('button', name='Save changes', exact=True).click()
+    expect(page.locator('.managed-property .price-row')).to_contain_text('90,00,000')
+    page.get_by_role('button', name='Archive', exact=True).click()
+    page.get_by_role('button', name='Archive listing', exact=True).click()
+    expect(page.locator('.managed-property')).to_have_class('managed-property archived')
+    check("Owner can edit and archive their listing")
+    page.get_by_role('button', name='Plan', exact=True).click()
+    expect(page.locator('.emi')).to_contain_text('69,426')
+    check("Home loan calculator computes the expected monthly payment")
+    page.get_by_role('button', name='Rent', exact=True).click()
+    expect(page.locator('.results-grid .property-card')).to_have_count(8)
+    page.screenshot(path=str(ARTIFACTS / 'desktop-rentals.png'))
+    check("Rent view changes results, cards, and marker colours")
+    page.get_by_role('button', name='Sign out', exact=True).click()
+    expect(page.get_by_role('button', name='Sign in', exact=True)).to_be_visible()
+    check("Sign-out clears the session")
+    for width in [390, 768]:
+        page.set_viewport_size({"width": width, "height": 844})
+        page.goto(BASE, wait_until='networkidle')
+        expect(page.locator('.property-card').first).to_be_visible()
+        no_overflow(page, f"Homepage at {width}px")
+        page.screenshot(path=str(ARTIFACTS / f'home-{width}.png'), full_page=True)
+        page.goto(BASE + '/homes?q=Hyderabad&purpose=sale', wait_until='networkidle')
+        expect(page.locator('.results-grid .property-card')).to_have_count(12)
+        no_overflow(page, f"Search at {width}px")
+        page.screenshot(path=str(ARTIFACTS / f'search-{width}.png'))
+        if width == 390:
+            page.get_by_role('button', name='Map', exact=True).click()
+            expect(page.locator('.map-pane')).to_be_visible()
+            expect(page.locator('.price-marker')).to_have_count(12)
+            page.screenshot(path=str(ARTIFACTS / 'mobile-map.png'))
+            page.get_by_role('button', name='List', exact=True).click()
+            expect(page.locator('.results-pane')).to_be_visible()
+            check("Mobile map and list switch correctly")
+    assert not errors, errors
+    check('No browser JavaScript errors')
+    (ARTIFACTS / 'browser-results.json').write_text(json.dumps({'checks': checks, 'errors': errors}, indent=2), encoding='utf-8')
+    browser.close()
+print(f'Completed {len(checks)} browser checks')
