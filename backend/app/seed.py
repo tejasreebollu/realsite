@@ -59,6 +59,27 @@ def seed(db):
             if item is None:
                 item = Property(**values, seed_key=key)
                 db.add(item)
+            if item.features is None:
+                # Populate new demo attributes once; retain owner edits on restarts.
+                item.features = {
+                    "posted_by": ["Owner", "Broker", "Builder"][i % 3],
+                    "listing_status": ["Available", "Available", "Coming soon", "Under offer"][i % 4],
+                    "sale_type": "" if rent else ["Resale", "New project", "Resale", "Bank auction"][i % 4],
+                    "possession": "Under construction" if not rent and i % 4 == 2 else "Ready to move",
+                    "ownership": "Leasehold" if i % 7 == 0 else "Freehold",
+                    "maintenance": [0, 1500, 3000, 5000][i % 4], "parking": i % 3,
+                    "covered_parking": i % 2 == 0, "carpet_sqft": round(item.sqft * .75),
+                    "plot_sqft": item.sqft * 2 if item.kind != "Apartment" else None,
+                    "year_built": 2005 + i % 20, "floors": 1 if i % 3 == 2 else 2 + i % 4,
+                    "basement": i % 6 == 0, "senior_living": i % 9 == 0,
+                    "facing": ["North", "East", "West", "South"][i % 4],
+                    "views": [["City"], ["Park"], ["Hills"], ["Water"]][i % 4],
+                    "site_visit": i % 2 == 0,
+                    "tour_3d_url": "/tours/demo-3d.html" if i % 3 == 0 else "",
+                    "video_url": "", "rera_id": f"DEMO-{city[:3].upper()}-{i:03}" if i % 4 == 1 else "",
+                }
+                if item.previous_price is None and i % 5 == 0:
+                    item.previous_price = round(item.price * 1.05)
             if "user" in accounts and item.owner_id is None:
                 item.owner_id = accounts["user"].id
             db.flush()

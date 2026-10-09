@@ -54,6 +54,8 @@ class Property(Base):
     images: Mapped[list] = mapped_column(JSON)
     amenities: Mapped[list] = mapped_column(JSON)
     description: Mapped[str] = mapped_column(Text)
+    features: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    previous_price: Mapped[int | None] = mapped_column(Integer, nullable=True)
     badge: Mapped[str] = mapped_column(String(80), default="New listing")
     agent: Mapped[str] = mapped_column(String(120))
     owner_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)

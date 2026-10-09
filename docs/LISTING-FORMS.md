@@ -1,5 +1,7 @@
 # Listing properties, open plots and rentals
 
+Updated: 9 October 2026.
+
 Open **Sell** or **Manage listings → Add a listing**. One regular account can buy, rent and publish listings.
 
 | Form | Supported property | Specific information |
@@ -31,3 +33,13 @@ Image metadata is in PostgreSQL; files persist in the property_images Docker vol
 Plots show land area, use, facing, road width and owner-supplied approval without fictitious bedroom counts. Rental details show deposit, furnishing and availability. Plot areas retain their entered units and are normalised to square feet for sorting and minimum-area search. Approval text is supplied by the owner and is not independently verified.
 
 The original 100 synthetic homes are preserved. Additional owner properties and plots do not replace those samples.
+
+## Optional details for India search
+
+Expand **More property details (optional)** in Details to supply listing source/status, maintenance, possession, ownership, parking, carpet/attached-plot area, construction year, storeys, basement, senior-living status, views, RERA number and HTTPS tour links. Fields adapt to property sale, open plots and rentals. Sale properties can now specify furnishing too. Leave unknown values blank. Carpet area cannot exceed built-up area. The core four-step form and image/location workflow stay the same.
+
+These values power the [More Filters panel](MORE-FILTERS.md) and appear in property facts. Owner-supplied registrations and approval text are not independent verification. Price changes automatically track the previous asking price for the Price reduced filter. Older API editors that omit the new details preserve them.
+
+## Search and handoff
+
+Listings created through these forms participate in price, room, India More Filters, viewport and [drawn-area search](DRAW-SEARCH.md). Drawing filters the saved map location; it does not change a listing location. Plot and commercial searches hide room-count controls. A supplied 3D tour URL links to content; the built-in sample model is illustrative. See [testing](TESTING.md) for form checks and [handoff](HANDOFF.md) for backing up uploaded images alongside the database.

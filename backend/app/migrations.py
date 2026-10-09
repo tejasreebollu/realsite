@@ -18,6 +18,8 @@ def migrate(engine):
             connection.execute(text("ALTER TABLE properties ADD COLUMN seed_key VARCHAR(120)"))
         connection.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_properties_seed_key ON properties (seed_key)"))
         additions = {
+            "features": "JSON",
+            "previous_price": "INTEGER",
             "area_unit": "VARCHAR(10) NOT NULL DEFAULT 'sqft'",
             "area_value": "FLOAT",
             "plot_use": "VARCHAR(20) NOT NULL DEFAULT ''",

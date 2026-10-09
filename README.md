@@ -1,6 +1,10 @@
 # RealSite Real Estate Portal · India
 
+Updated: 9 October 2026.
+
 RealSite is a working real estate portal for India, with a React interface based on the supplied layout references, a FastAPI API, PostgreSQL persistence, Redis search caching and rate limits, and Docker Compose.
+
+Draw a custom area on the search map with the compact pen cursor, then Apply to filter properties inside it. Remove Boundary restores the original city and retains other filters, including after a refresh. See [drawn-area search](docs/DRAW-SEARCH.md).
 
 ## Open the application
 
@@ -43,8 +47,11 @@ docker compose down
 
 - India homepage with photographic hero, city search suggestions, listing carousels, recent views, and buy/rent/sell actions.
 - Sale and rental search by city, address, neighbourhood, state, or PIN code.
-- Budget, bedrooms, bathrooms, property type, area, amenities, and sorting filters; server-side pagination.
+- Budget, bedrooms, bathrooms, property type, area, amenities, and sorting filters; server-side pagination. Room counts keep **1+, 2+, etc.** by default. Each group has a **Use exact match** checkbox. For exactly 2 beds / 2 baths, select **2+** for both and check **Use exact match** in each group.
+- **More Filters** adapts the reference panel for India: INR maintenance, owner/broker/builder, status/possession, furnishing, parking, area ranges, tours, amenities, views, plot requirements, nearby-distance searches and listing updates. Owners can supply these details when adding/editing a listing. See [India filters](docs/MORE-FILTERS.md).
+- **Price** offers List Price with an inventory histogram, two slider handles and INR Min/Max inputs, or Monthly Payment with down payment, demo credit scenarios and editable loan assumptions. Rental searches use monthly rent. See [price filters](docs/PRICE-FILTER.md).
 - Interactive OpenStreetMap with actual listing coordinates, INR price markers, map popups, re-centre, and optional viewport searching. Mobile map/list switch.
+- Pen drawing with mouse/touch, a shaded preview, adjustable corners, edit/redraw/cancel, keyboard input, and server-side polygon filtering. Small closing overlaps are repaired; the original city is restored on boundary removal. URLs and saved searches retain the area and return location.
 - **Map Options** button at the map's bottom right: Automatic, Satellite, Street view, and Climate Risk choices. Satellite loads Esri imagery; Street view opens the current map centre in Google Maps. Climate-risk data is currently unavailable and no risk overlays are rendered. See [map options](docs/MAP-OPTIONS.md).
 - Property galleries, facts, amenities, location, saved-home actions, and shareable property URLs.
 - Single-account registration, sign-in, sign-out, database-backed expiring sessions, and password hashing; administrator access is provisioned separately.
@@ -67,7 +74,7 @@ Set `SEED_DEMO=false` and `DEMO_ACCOUNTS_ENABLED=false` on a fresh database to s
 ## Verify
 
 ```powershell
-docker compose run --rm --no-deps api python -m pytest -q -p no:cacheprovider
+docker compose run --rm --no-deps -e DATABASE_URL=sqlite:////tmp/portal-tests.db api python -m pytest -q -p no:cacheprovider
 ```
 
 The regression suite uses an isolated SQLite database inside a disposable container and a Redis test adapter. It checks authentication, privacy, filter results, cache invalidation, listing ownership, archival, and enquiry routing. Live browser verification additionally exercises the real PostgreSQL and Redis stack.
@@ -82,6 +89,12 @@ python scripts/verify_browser.py
 Browser checks create a test account, a sample enquiry, a saved search, and an archived test listing in the local database. Screenshots and results are saved under ignored `artifacts/`.
 
 ## Technical documents
+
+- [Project handoff and operations](docs/HANDOFF.md)
+- [Testing and release checks](docs/TESTING.md)
+- [Drawn-area search and compact pen cursor](docs/DRAW-SEARCH.md)
+- [India More Filters](docs/MORE-FILTERS.md)
+- [INR price and monthly-payment filters](docs/PRICE-FILTER.md)
 
 - [Listing forms, photos and map picker](docs/LISTING-FORMS.md)
 - [Architecture and API](docs/ARCHITECTURE.md)

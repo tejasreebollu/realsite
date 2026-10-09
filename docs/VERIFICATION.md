@@ -1,4 +1,28 @@
-# Verification record · 8 October 2026
+# Verification record · current release 9 October 2026
+
+## Current release - 9 October 2026
+
+All maintained Markdown documents have been synchronised with the latest implementation. [Project handoff](HANDOFF.md) and [testing guide](TESTING.md) cover source navigation, local setup/update, demo accounts, backups, validation and remaining integrations. The reference-to-India scope now identifies polygon search as implemented and reserves multiple regions/holes for future work.
+
+| Current check | Outcome |
+| --- | --- |
+| Complete isolated backend suite | 131 passed; one existing Starlette/AnyIO deprecation warning |
+| Pure Node drawing/location scripts | 2 passed |
+| Pen drawing browser workflow | 12 checks passed |
+| Price/EMI browser workflow | 12 checks passed |
+| India More Filters/listing metadata/3D model | 14 checks passed |
+| Compact pen cursor | 24x24 SVG decoded; nib hotspot (3,21), held drawing, Move map, preview and Redraw verified |
+| Local readiness | PostgreSQL and Redis connected |
+| Production frontend | Built and deployed; `index-BSvMriyh.css`, `index-BZngyupu.js` |
+
+The latest browser drawing checks include Hyderabad and the other four demo cities, all-India searches, price/room retention, refresh, redraw, boundary removal, Back/Forward and phone touch input. A 24px thin pen cursor remains visible during drawing; Move map and finished-area editing use a hand. Local demo volumes were retained. Browser filter checks create their own accounts and archive their own temporary listings; these history rows can increase total record counts. Existing customer/demo listing edits are preserved.
+
+Evidence remains local under ignored `artifacts/`: `pen-draw-results.json`, `price-filter-results.json`, `more-filters-results.json`, `pen-cursor-check.json` and `release-checks.json`. Public demo JSON contains only the 100 synthetic listings. Secrets, uploaded customer photographs, backups and screenshots are excluded from Git.
+
+Earlier sections below are historical validation records. Their account roles, inventory totals and asset hashes describe that earlier stage, rather than the current release. The latest tests do not establish Azure runtime, live inventory accuracy, lender eligibility or production certification. No Azure resources were provisioned.
+
+## Historical validation records
+
 
 ## Local stack
 
@@ -115,3 +139,122 @@ Three uploaded covers survived forced API/web container recreation with identica
 The original 123 property rows retain an identical fingerprint excluding the nine new fields. The original 100 synthetic properties remain active and the generic demo user still owns exactly 100 listings. Browser fixtures belong to separate test accounts and were archived. Evidence is in `artifacts/listing-upgrade-data-check.json`; a pre-upgrade PostgreSQL backup is in `artifacts/realsite-before-listing-upgrade.dump`.
 
 See [listing forms](LISTING-FORMS.md) for usage, limits and storage. The Azure VM overlay inherits the image volume; no Azure deployment was performed. Managed Blob storage and abandoned-image cleanup remain future work.
+
+## Beds and baths selection feedback - 9 October 2026
+
+Fixed missing styles on bedroom/bathroom choice buttons. Previously selections changed the search state but selected and unselected options looked identical, with small 22px-high click targets. Choices now have distinct blue selected states, 44px-high buttons, labelled groups and pressed-state accessibility attributes. Both minimum counts can be selected before Apply; reopening retains applied values and Any clears a constraint.
+
+The frontend production build succeeded and the local web container was updated and is healthy. **9 focused browser checks passed**: sale and rental searches at 1920px, 768px, 390px and 360px plus no JavaScript errors. Checks exercise every choice, visible selection, keyboard/touch input, actual combined filter results, reopening, discarding unapplied changes, Any reset and no overflow. The checks are read-only and do not create accounts or listings.
+
+Reproduce with `python scripts/verify_beds_baths.py` after installing the project-local Playwright dependency described in README. Evidence is in ignored `artifacts/beds-baths-results.json` and `artifacts/beds-baths-{sale,rent}-{width}.png`.
+
+## Exact-match checkboxes and room upper limits - 9 October 2026
+
+Retained the familiar **1+, 2+, 3+** defaults and added a separate **Use exact match** checkbox to bedrooms and bathrooms, using grouped count buttons and section bands from the supplied reference. Checking the box converts a minimum to exactly that count. When unchecked, **At least** or **At most** can be chosen independently. Any removes a count constraint; Clear resets both groups and their matching modes. Counts from 6 to 20 are also selectable. A preview and applied-filter summary show the criteria, and saved searches display and restore both room counts and modes.
+
+The API validates `beds_match` and `baths_match` as `min`, `exact` or `max`, applies the corresponding SQL comparison and includes the modes in cache keys and saved-search validation. Missing modes keep previous minimum semantics for old links and saved searches. Room-constrained queries omit commercial properties and plots. No database schema migration was needed.
+
+The backend suite passed **50 tests**, including nine new room-filter cases covering exact/maximum/minimum searches for sale and rent, mixed modes, pagination, cache separation, Any, invalid inputs, saved-search restoration and legacy defaults. The frontend production build succeeded. **11 focused browser checks passed** with no JavaScript errors: all three matching modes and default plus labels at 1920px, 768px, 390px and 360px, checkbox state, touch/keyboard choices, real result IDs, URL reload, cancelling draft changes, Clear, larger counts and saved-search display/restoration. The 360px layout uses a short 640px viewport. Testing caught and corrected the floating mobile Map control overlapping Apply; the background map/list control is hidden whenever a filter panel is open.
+
+All four local services are healthy. Evidence is in `artifacts/beds-baths-results.json` and `artifacts/beds-baths-{sale,rent}-{width}.png`. The focused script now covers this expanded behaviour and supersedes the previous nine-check report. Saved-search browser checks create a separate test account and delete their saved searches after completing; original demo accounts and listings are not modified.
+
+## Simplified room filter controls - 9 October 2026
+
+Removed the **Match counts** dropdowns and the **At least / At most** choices from the public filter. Bedrooms and bathrooms retain **1+, 2+, 3+** choices and independent **Use exact match** checkboxes. Checking converts the selected count to exact matching; unchecking restores plus-count matching. Summaries use compact plus notation, for example **2+ beds**, or **Exactly 2 beds**. Current usage documentation is updated. Existing API maximum matching remains available for compatibility; the public UI does not offer it.
+
+The frontend production build succeeded and the local web container was updated. **11 focused browser checks passed**, covering sale/rental searches at 1920px, 768px, 390px and 360px (including a short 640px viewport), absent matching dropdowns, exact-match checkboxes, plus counts, actual filtered result IDs, keyboard/touch selection, URL reload, Clear, cancelled draft changes, larger room counts, saved searches and no JavaScript errors. This supersedes the previous UI and focused report. Evidence is in `artifacts/beds-baths-results.json` and the corresponding screenshots. Backend behaviour was unchanged by this UI simplification.
+
+## Remove More counts - 9 October 2026
+
+Removed the **More counts (6-20)** dropdowns from both room groups and their unused styles. The filter now contains Any, 1+ through 5+, exact-match checkboxes, a summary, Clear and Apply. Updated the existing browser verification script to remove the larger-count flow and require no selects inside the room filter.
+
+The frontend production build succeeded. Focused browser checks at 1920px, 390px and 360px verified absent dropdowns, converting 2+ to exactly 2 for each room group, applying both exact constraints to real results, no page overflow and no JavaScript errors. Screenshots are in `artifacts/room-counts-final-{width}.png`. The local web container was updated.
+
+## Compact room-filter panel - 9 October 2026
+
+Combined each room heading and exact-match checkbox in one row, removed the duplicate section banners, reduced padding and gaps, and compacted the summary/action area. Count buttons retain 44px-high touch targets. The content fits naturally; the scrollbar is not merely hidden.
+
+The frontend build succeeded. Six focused browser layouts (1920x900, 1366x600, 768x700, 390x844, 360x640 and 360x568) verified that the panel is under 330px tall, every control fits, scroll dimensions do not exceed client dimensions, page width stays within the viewport, and exact 2-bed/2-bath filtering still works. No JavaScript errors occurred. Screenshots and metrics are in `artifacts/compact-room-filter-*`. The existing room-filter regression check now also asserts no internal scrolling. The local web container was updated.
+
+## Price filter and monthly-payment search - 9 October 2026
+
+Implemented the reference tabbed price layouts with INR amounts. List Price uses a 30-bin aggregation of actual filtered active inventory, two draggable/keyboard slider handles and synchronised Min/Max fields. Monthly Payment uses down payment, clearly marked demo credit scenarios and editable APR/tenure. The API applies estimated loan EMI bounds before totals and pagination; cards show estimated payments. URLs, cache keys and saved searches retain financing criteria. Rental searches use monthly rent without home-loan controls.
+
+- Production API/frontend builds succeeded. Final frontend assets: `index-CnEisR0W.css` and `index-CLsEv7vg.js`.
+- Isolated backend suite: **68 passed**, including 18 new price/distribution/payment cases. One existing Starlette/AnyIO deprecation warning; no failures.
+- Final `python scripts/verify_price_filter.py`: **12 checks passed**, no JavaScript errors. Verified both mouse-drag slider handles, keyboard changes, reversed-range validation, actual INR and EMI result IDs, financing edits, reload, saved-search restoration, custom valid URL values, calculator navigation and rental switching/Clear.
+- Six layouts: 1920x900, 1366x600, 768x700, 390x844, 360x640 and 320x568. The panel stays within the viewport; Apply is visible, and editable assumptions remain reachable on short screens. Short-screen panels can scroll while the action area remains available. Screenshots and dimensions: `artifacts/price-*` and `artifacts/price-filter-results.json`.
+- Local API/web containers are healthy at http://localhost:8090; readiness reports PostgreSQL and Redis connected. Existing demo inventory is retained: 120 stored demo rows, 100 active. The tests use a separate browser test account and remove its temporary saved searches. Database and uploaded-image volumes were preserved.
+
+Loan rates are planning assumptions, not lender quotes; no credit score is checked. No database schema change or Azure deployment was required. These results were recorded before the documentation release commit.
+
+## India More Filters - 9 October 2026
+
+Implemented the supplied scrollable filter references with fixed actions and India terminology. Connected maintenance, source/category/status, possession/furnishing/ownership, parking, area/year ranges, building features, senior living, multiple amenities/views, owner-supplied RERA/approval details, plot land use and road width, tours, distance, price reductions, listing age and keywords. Add/edit forms retain a collapsed optional details section. Added validated JSON metadata, prior asking price and a repeatable additive migration; refreshed the 100-property public synthetic snapshot.
+
+Final validation:
+
+- API and production frontend builds passed. Web assets: `index-DSaj3JeS.css` and `index-DVRt9sEQ.js`.
+- **112 backend tests passed on isolated SQLite**, including 44 new advanced-filter cases. One existing Starlette/AnyIO deprecation warning.
+- **14 More Filters browser checks passed** against the restored original portal. Covered combined predicates, actual PostgreSQL results, URL/reload/cancel, visible errors, saved searches, sale/rental/plot details editing, nearby map pin, synthetic 3D model, and six layouts from 1920x900 through 320x568. Apply and Reset stay visible; the scroll body reaches all sections.
+- **12 existing price-filter browser checks passed** against the restored original inventory. No JavaScript errors in either browser run. Evidence: `artifacts/more-filters-results.json`, `artifacts/price-filter-results.json` and screenshots.
+- Readiness is healthy with PostgreSQL and Redis connected. DB and image volumes were preserved. Browser checks archive their own temporary listings and remove their own saved searches; real customer and demo data remain separate.
+
+### Test-isolation incident and recovery
+
+The initial advanced test imported application models before the older fixture set DATABASE_URL, so its table-reset fixture affected the local PostgreSQL database. This was detected by comparing the original inventory snapshot. The pre-change `artifacts/before-more-filters.sql` backup was restored before continuing. A dump comparison confirmed every row/field in all seven tables matched the backup exactly: 14 users, 133 properties (101 active), 21 uploaded-image records, 19 auth sessions, 8 favourites, 9 enquiries and 10 saved searches.
+
+`tests/conftest.py` now forces SQLite before any test import, the fixture refuses to reset a non-SQLite database, and all documented test commands explicitly set a SQLite DATABASE_URL. The full suite was rerun with that explicit override. The additive migration then preserved every original field/record; all 21 original uploaded images returned valid JPEG responses. Final preservation checks ran after protected tests and browser verification. Evidence: `artifacts/database-restore-verification.json` and `artifacts/more-filters-original-data-preserved.json`. Private backups remain ignored by Git.
+
+The nearby filter is straight-line distance; traffic/travel-time routing remains an integration. Registration/approval details are owner supplied; no verification is implied. 3D demo geometry is illustrative, and video availability is not fabricated. These results were recorded before the documentation release commit.
+
+
+## Drawn-area map search - 9 October 2026
+
+Added Draw, freehand and clicked-corner drawing, a shaded preview, Undo/Draw again/Finish shape, Apply/Cancel and Remove Boundary. Keyboard users can add corners with Enter and move the centre with arrows. Applying clears the text location and temporary map viewport bounds, retains all property criteria, and stores the polygon in URLs and saved searches. Search totals, pagination, map markers, Redis keys and price distributions share a validated SQL polygon predicate. Edge points and concave polygons are supported. Crossing, degenerate and oversized shapes are rejected. One region with up to 64 corners is supported; no database schema change is required.
+
+- API and production frontend builds passed. Final web assets: `index-DoylTq4G.css` and `index-Bkb79lN1.js`.
+- **130 backend tests passed** in an explicitly isolated SQLite container, including 18 new polygon cases. The existing fixture refuses to reset PostgreSQL. One existing Starlette/AnyIO deprecation warning remains.
+- **14 drawing browser checks passed** against PostgreSQL: clicked corners, freehand simplification, real result IDs/counts/markers, histogram, combined filters, reload, saved searches, cancel/Escape, browser Back, boundary removal, concavity, invalid shapes/Undo, keyboard drawing/navigation and city changes.
+- Drawing was checked at 1366x600, 390x844 and 320x568 with mouse and genuine touch input. Phone toolbar controls remain inside the viewport and retain touch-sized actions. The keyboard hint allows gestures to pass through it.
+- **12 existing price-filter browser checks passed**. A separate final-build smoke check confirmed proper INR text, Draw/Apply/reload and healthy database/Redis readiness after the UTF-8 text cleanup. No browser JavaScript errors occurred.
+- A read-only PostgreSQL request also confirmed a maximum 64-corner polygon returns matching result and histogram totals.
+- Every original account, property, favourite, enquiry, saved-search and uploaded-image record/field matches the original backup; all 21 uploaded JPEGs remain accessible. Transient login-session rows are excluded from this business-data comparison. No application data restore or schema change was needed for drawing.
+
+Evidence: `artifacts/draw-search-results.json`, `artifacts/draw-search-final-smoke.json`, `artifacts/draw-search-data-preserved.json`, `artifacts/draw-search-final.png` and responsive drawing screenshots. See [drawing instructions](DRAW-SEARCH.md). These results were recorded before the documentation release commit.
+
+
+## Pen drawing usability - 9 October 2026
+
+Changed the default draw interaction to a continuous pen stroke: press/hold, draw and release to close the area automatically. Removed the separate Finish step from the normal pointer workflow. Added a compact Pen/Move map/Redraw/Apply/Cancel toolbar, draggable corner refinement and Edit area for applied boundaries. Stroke updates use animation frames, and no per-sample markers are created while drawing. Mouse, touch and coalesced pointer samples share the same flow.
+
+- Production frontend build passed; deployed web assets: `index-CdDQ2Iqy.css`, `index-C1oAWpJY.js`.
+- **9 focused pen browser checks passed**: live mouse stroke, automatic closure, adjustable corners, actual PostgreSQL IDs/counts/markers/histogram, reload/edit/cancel, Move map, Redraw/Escape, removal, accidental clicks, invalid crossed strokes and continuous finger input.
+- Layouts at 1366x600, 390x844 and 320x568 keep the toolbar under 70px tall and within the viewport. No horizontal overflow or JavaScript errors.
+- The change updates the frontend only. The previously validated backend polygon predicate and database remain unchanged; backend tests were not repeated for this interaction refinement.
+
+Evidence: `artifacts/pen-draw-results.json`, `artifacts/pen-draw-preview.png` and `artifacts/pen-draw-{width}-{height}.png`. See [pen drawing instructions](DRAW-SEARCH.md). These results were recorded before the documentation release commit.
+
+
+## Pen closing overlap repair - 9 October 2026
+
+Added conservative screen-space stroke cleanup after simplification. Small accidental loops and overruns are split at their intersections and trimmed when the discarded area stays within 8 percent of the retained region. The actual traced outline and concavity remain; it is not replaced by a convex hull. Substantial crossed regions remain invalid and editable. The corrected error directs users to drag a white corner or select the available Redraw action.
+
+- Pure Node geometry checks passed for exact closure, duplicate neighbours, overrunning the start, reverse winding, concave outlines, tiny joining loops and genuine figure-eight crossings. The source was mounted read-only in the cached Node 22 container.
+- **10 pen browser checks passed**. A new regression draws back to the initial point and beyond it, verifies Apply is enabled, and compares the cleaned polygon's actual PostgreSQL result IDs with an independent point-in-polygon calculation. Existing mouse/finger strokes, drag editing, map movement, redraw/cancel/removal, histogram and 1366x600/390x844/320x568 layouts still pass. No JavaScript errors.
+- Production frontend build and local deployment passed. Assets: `index-CdDQ2Iqy.css`, `index-dCQ0uqMK.js`.
+- The fix changes the frontend only; the backend predicate and database were unchanged.
+
+Evidence: `artifacts/pen-draw-results.json`, `artifacts/pen-closing-overlap-fixed.png`, and `frontend/scripts/verify-stroke-shape.mjs`. These results were recorded before the documentation release commit.
+
+
+## Restore the city after boundary removal - 9 October 2026
+
+Applying a drawn area now remembers the previous text location as `boundary_q` in the URL and saved-search JSON. Remove Boundary restores that location and its map view while retaining property criteria. Redraw/edit and browser navigation preserve the original location; Reset clears property criteria and the polygon while returning to that city. An all-India search still returns to all India. Older drawn links without return context keep their previous all-India fallback.
+
+- Production web/API builds and local deployment passed. Web assets: `index-CdDQ2Iqy.css`, `index-2g9QhHv0.js`. Existing database and upload volumes were retained; no schema migration is required.
+- Pure Node transition checks passed for apply/remove, redraw, changed room/rental criteria, new-location search, reset, all-India and legacy links.
+- **19 focused API tests passed** in isolated SQLite, including saved return-location persistence, context length validation and confirming the original city does not constrain drawn-area results or histograms. One existing Starlette/AnyIO deprecation warning remains.
+- **12 browser checks passed** against the deployed PostgreSQL portal. The reported Hyderabad flow restores the city search, result IDs, markers and map after drawing and reload. All five demo cities and a location-free search retain price/room criteria through removal and Back/Forward. Existing pen drawing, corner adjustment, loop repair, mouse/touch and three responsive layouts pass without JavaScript errors.
+
+Evidence: `artifacts/pen-draw-results.json`, `artifacts/boundary-hyderabad-restored.png` and `frontend/scripts/verify-boundary-search.mjs`. These results were recorded before the documentation release commit.

@@ -31,6 +31,7 @@ class FakeRedis:
 
 @pytest.fixture
 def client(monkeypatch):
+    assert engine.dialect.name == "sqlite", "Tests must never reset the portal database"
     Base.metadata.drop_all(engine)
     monkeypatch.setattr(main, "cache", FakeRedis())
     with TestClient(main.app) as client:

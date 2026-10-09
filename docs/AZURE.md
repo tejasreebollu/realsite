@@ -1,5 +1,7 @@
 # Azure evaluation deployment
 
+Updated: 9 October 2026.
+
 The included Azure path hosts the same Docker stack on one Ubuntu VM with Caddy providing domain-based HTTPS. It is an evaluation topology. No Azure resources have been created by this work.
 
 ## Included files
@@ -60,3 +62,7 @@ Add email verification/password reset, moderation, data retention, and a full se
 Sources: [Azure Linux VM CLI quickstart](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/quick-create-cli), [Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/).
 
 Property images persist in the property_images volume inherited from base Compose. Back it up alongside PostgreSQL; managed Azure Blob storage is not configured by this VM template.
+
+## Updating this release
+
+The release includes advanced listing metadata, price/room filters and drawn-area search. Existing databases receive nullable `features` JSON and `previous_price` columns through the compatibility migration; polygon and return-location criteria stay in existing saved-search JSON. Startup preserves existing inventory and account activity. Back up PostgreSQL and the image volume before upgrading an existing evaluation VM. A frontend-only cursor/layout change can use `docker compose -f compose.yml -f infra/compose.azure.yml up -d --build --no-deps web`. Follow [handoff](HANDOFF.md) for data preservation and [testing](TESTING.md) for checks. These changes have been exercised locally; Azure runtime remains unverified.

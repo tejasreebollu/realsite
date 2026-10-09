@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-lea
 import L from 'leaflet';
 import { Building2, MapPin, KeyRound, Upload, ImagePlus, X, Check, ChevronLeft, ArrowRight, LoaderCircle, LocateFixed, MoveUp, MoveDown, MoveLeft, MoveRight } from 'lucide-react';
 import { api, money, areaText } from './api';
+import ListingFeatures from './listing-features';
 import 'leaflet/dist/leaflet.css';
 import './listing.css';
 
@@ -13,7 +14,7 @@ const cityInfo = {
   Mumbai: ['Maharashtra', 19.0760, 72.8777], Pune: ['Maharashtra', 18.5204, 73.8567],
   'New Delhi': ['Delhi', 28.6139, 77.2090],
 };
-const homeAmenities = ['Parking', 'Security', 'Power backup', 'Balcony', 'Swimming pool', 'Gym', 'Garden'];
+const homeAmenities = ['Parking', 'Security', 'Power backup', 'Balcony', 'Swimming pool', 'Gym', 'Garden', 'Water supply', 'Gated community', 'Lift', 'Air conditioning'];
 const plotAmenities = ['Water supply', 'Electricity', 'Boundary wall', 'Gated community', 'Security'];
 const choices = [
   { mode: 'sale', title: 'Sell a property', text: 'Apartments, villas, houses, buildings and commercial spaces.', icon: Building2 },
@@ -40,7 +41,7 @@ function PickerEvents({ onSelect, onCenter, selected }) {
   return null;
 }
 
-export function LocationPicker({ city, selected, onChange }) {
+export function LocationPicker({ city, selected, onChange, title = 'Pin your property on the map', hint = 'Click the map or drag the pin to the entrance of your property.' }) {
   const initial = cityInfo[city]?.slice(1) || [20.6, 78.9];
   const [center, setCenter] = useState({ lat: selected?.lat ?? initial[0], lng: selected?.lng ?? initial[1] });
   const [error, setError] = useState('');
@@ -60,7 +61,7 @@ export function LocationPicker({ city, selected, onChange }) {
     }, () => { setError('Unable to get your location. You can select it on the map.'); setLocating(false); }, { enableHighAccuracy: true, timeout: 10000 });
   };
   return <section className="listing-location-picker" aria-label="Select property location">
-    <div className="listing-section-heading"><div><h3>Pin your property on the map</h3><p>Click the map or drag the pin to the entrance of your property.</p></div></div>
+    <div className="listing-section-heading"><div><h3>{title}</h3><p>{hint}</p></div></div>
     <div className="listing-location-map">
       <MapContainer center={[center.lat, center.lng]} zoom={selected ? 15 : cityInfo[city] ? 13 : 5} scrollWheelZoom={false}>
         <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' eventHandlers={{ tileerror: () => setTilesUnavailable(true) }} />
@@ -125,6 +126,7 @@ function ListingWizard({ mode, item, close, saved, Modal, changeType }) {
     city: item.city || 'Hyderabad', state: item.state || 'Telangana', address: item.address || '', pincode: item.pincode || '',
     description: item.description || '', images: item.images || [], amenities: item.amenities || (plot ? [] : ['Parking', 'Security']),
     plot_use: item.plot_use || 'Residential', plot_facing: item.plot_facing || '', road_width_ft: item.road_width_ft ?? '', plot_approval: item.plot_approval || '',
+    features: item.features && Object.keys(item.features).length ? item.features : {posted_by:'Owner',listing_status:'Available'},
     deposit: item.deposit ?? '', furnishing: item.furnishing || 'Unfurnished', available_from: item.available_from || '',
   }));
   const commercial = commercialTypes.includes(form.kind);
@@ -140,6 +142,7 @@ function ListingWizard({ mode, item, close, saved, Modal, changeType }) {
   const title = item.id ? 'Edit your listing' : choices.find(choice => choice.mode === mode).title;
   const submit = async e => {
     e.preventDefault(); setError('');
+    if (step === 0 && !plot && form.features.carpet_sqft && Number(form.features.carpet_sqft) > area) { setError('Carpet area cannot exceed built-up area.'); return; }
     if (step === 0 && plot && (!area || area > 10000000)) { setError('Enter a plot area between 1 and 10,000,000 square feet.'); return; }
     if (step === 1 && !location) { setError('Please select your property location on the map.'); return; }
     if (step === 2 && !form.images.length) { setError('Add at least one property photo to continue.'); return; }
@@ -152,8 +155,9 @@ function ListingWizard({ mode, item, close, saved, Modal, changeType }) {
       area_unit: plot ? form.area_unit : 'sqft', area_value: plot ? Number(form.area_value) : null,
       plot_use: plot ? form.plot_use : '', plot_facing: plot ? form.plot_facing : '',
       road_width_ft: plot && form.road_width_ft ? Number(form.road_width_ft) : null, plot_approval: plot ? form.plot_approval.trim() : '',
-      deposit: rental ? Number(form.deposit || 0) : 0, furnishing: rental ? form.furnishing : 'Unfurnished',
+      deposit: rental ? Number(form.deposit || 0) : 0, furnishing: plot ? 'Unfurnished' : form.furnishing,
       available_from: rental && form.available_from ? form.available_from : null,
+      features: { ...form.features, ...(rental ? {sale_type:'', rera_id:''} : {}), ...(plot ? {possession:'', carpet_sqft:null,plot_sqft:null,parking:null,covered_parking:null,year_built:null,floors:null,basement:null,senior_living:null,tour_3d_url:'',video_url:'',facing:''} : {}) },
     };
     setBusy(true);
     try { const result = await api('/properties' + (item.id ? '/' + item.id : ''), { method: item.id ? 'PUT' : 'POST', body: JSON.stringify(body) }); saved(result); }
@@ -169,10 +173,12 @@ function ListingWizard({ mode, item, close, saved, Modal, changeType }) {
         <div className="form-grid">{!plot && <Field label="Property type" name="kind" form={form} change={change} options={propertyTypes} />}
           <Field label={rental ? 'Monthly rent (₹)' : 'Selling price (₹)'} name="price" form={form} change={change} type="number" min="1" max="2000000000" required placeholder={rental ? '25000' : '8500000'} />
           {plot ? <><Field label="Plot area" name="area_value" form={form} change={change} type="number" min=".0001" step="any" max="10000000" required placeholder="200" /><Field label="Area unit" name="area_unit" form={form} change={change} options={[['sqyd', 'Square yards'], ['sqft', 'Square feet'], ['acre', 'Acres']]} /><Field label="Land use" name="plot_use" form={form} change={change} options={['Residential', 'Commercial', 'Agricultural']} /><Field label="Facing (optional)" name="plot_facing" form={form} change={change} options={[['', 'Select facing'], 'North', 'South', 'East', 'West', 'North-East', 'North-West', 'South-East', 'South-West']} /><Field label="Road width in feet (optional)" name="road_width_ft" form={form} change={change} type="number" min="1" max="300" /><Field label="Layout / authority approval (optional)" name="plot_approval" form={form} change={change} maxLength={100} placeholder="e.g. HMDA or DTCP; details supplied by owner" /></> : <><Field label="Built-up area (sqft)" name="sqft" form={form} change={change} type="number" min="1" max="10000000" required placeholder="1600" />{!commercial && <Field label="Bedrooms" name="beds" form={form} change={change} type="number" min="0" max="20" required />}<Field label={commercial ? 'Bathrooms (optional)' : 'Bathrooms'} name="baths" form={form} change={change} type="number" min={commercial ? 0 : 1} max="20" required={!commercial} /></>}
+          {!plot && !rental && <Field label="Furnishing" name="furnishing" form={form} change={change} options={['Unfurnished', 'Semi-furnished', 'Furnished']} />}
           {rental && <><Field label="Security deposit (₹)" name="deposit" form={form} change={change} type="number" min="0" max="2000000000" placeholder="0" /><Field label="Furnishing" name="furnishing" form={form} change={change} options={['Unfurnished', 'Semi-furnished', 'Furnished']} /><Field label="Available from (optional)" name="available_from" form={form} change={change} type="date" /></>}
         </div>
         <label>What makes this property special?<textarea aria-label="What makes this property special?" name="description" value={form.description} onChange={e => change('description', e.target.value)} minLength={30} maxLength={5000} rows={4} required placeholder={plot ? 'Describe road access, surroundings, boundaries and any layout information.' : 'Describe the property, its surroundings and what buyers or tenants will love.'} /></label>
         <fieldset className="listing-amenities"><legend>{plot ? 'Plot facilities' : 'Amenities'}</legend><div className="amenity-checkboxes">{(plot ? plotAmenities : homeAmenities).map(amenity => <label key={amenity}><input type="checkbox" checked={form.amenities.includes(amenity)} onChange={() => change('amenities', form.amenities.includes(amenity) ? form.amenities.filter(value => value !== amenity) : [...form.amenities, amenity])} />{amenity}</label>)}</div></fieldset>
+        <ListingFeatures value={form.features} onChange={features => change('features',features)} plot={plot} rental={rental} />
       </div>}
       {step === 1 && <div className="listing-step" key="location"><h3>Where is your property?</h3><div className="form-grid"><label>City<input name="city" list="listing-cities" value={form.city} onChange={e => change('city', e.target.value)} minLength={2} maxLength={100} required /><datalist id="listing-cities">{Object.keys(cityInfo).map(city => <option key={city} value={city} />)}</datalist></label><Field label="State" name="state" form={form} change={change} minLength={2} maxLength={100} required /></div>
         <Field label="Address" name="address" form={form} change={change} minLength={5} maxLength={250} required placeholder={plot ? 'Plot number, layout, road and locality' : 'Unit, building, road and locality'} />

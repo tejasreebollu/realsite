@@ -1,6 +1,7 @@
 import hashlib
 import json
 import logging
+import math
 import os
 import secrets
 from contextlib import asynccontextmanager
@@ -12,7 +13,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 from redis import Redis, RedisError
-from sqlalchemy import String, func, or_, select, text
+from sqlalchemy import Integer, String, case, cast, func, or_, select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -20,6 +21,8 @@ from .models import AuthSession, Base, Favorite, Inquiry, Property, SavedSearch,
 from .seed import CITIES, seed
 from .passwords import hash_password, verify_password
 from .migrations import migrate
+from .advanced_filters import AdvancedFilters, PropertyFeatures, apply_advanced, validate_advanced
+from .map_boundary import parse_boundary, apply_boundary
 
 logger = logging.getLogger(__name__)
 cache = Redis.from_url(os.getenv("REDIS_URL", "redis://redis:6379/0"), decode_responses=True, socket_connect_timeout=2, socket_timeout=2)
@@ -181,7 +184,7 @@ def logout(request: Request, response: Response, db: Session = Depends(database)
 
 
 def property_dict(p):
-    return {key: getattr(p, key) for key in ("id", "title", "address", "city", "state", "pincode", "price", "beds", "baths", "sqft", "kind", "purpose", "lat", "lng", "images", "amenities", "description", "badge", "agent", "demo", "owner_id", "active", "area_unit", "area_value", "plot_use", "plot_facing", "road_width_ft", "plot_approval", "deposit", "furnishing", "available_from")} | {"created_at": p.created_at.isoformat()}
+    return {key: getattr(p, key) for key in ("id", "title", "address", "city", "state", "pincode", "price", "beds", "baths", "sqft", "kind", "purpose", "lat", "lng", "images", "amenities", "description", "badge", "agent", "demo", "owner_id", "active", "area_unit", "area_value", "plot_use", "plot_facing", "road_width_ft", "plot_approval", "deposit", "furnishing", "available_from", "previous_price")} | {"features": p.features or {}} | {"created_at": p.created_at.isoformat()}
 
 
 @app.get("/api/cities")
@@ -189,22 +192,89 @@ def cities():
     return [{"name": city, **info} for city, info in CITIES.items()]
 
 
-class SearchFilters(BaseModel):
+class SearchFilters(AdvancedFilters):
+    polygon: str = Field(default="", max_length=3000)
+    # Return location for drawn searches; metadata only, never a SQL city constraint.
+    boundary_q: str = Field(default="", max_length=150)
     q: str = Field(default="", max_length=150)
     agent: str = Field(default="", max_length=120)
     purpose: Literal["sale", "rent"] = "sale"
     min_price: int = Field(default=0, ge=0, le=2_000_000_000)
     max_price: int | None = Field(default=None, ge=0, le=2_000_000_000)
+    price_mode: Literal["price", "payment"] = "price"
+    min_payment: int = Field(default=0, ge=0, le=20_000_000)
+    max_payment: int | None = Field(default=None, ge=0, le=20_000_000)
+    down_pct: int = Field(default=20, ge=0, le=90)
+    annual_rate: float = Field(default=8.5, ge=0, le=25, allow_inf_nan=False)
+    loan_years: int = Field(default=20, ge=5, le=30)
+    credit_band: Literal["none", "800plus", "750799", "700749", "650699", "below650"] = "none"
     beds: int = Field(default=0, ge=0, le=20)
     baths: int = Field(default=0, ge=0, le=20)
+    beds_match: Literal["min", "exact", "max"] = "min"
+    baths_match: Literal["min", "exact", "max"] = "min"
     kind: Literal["", "Apartment", "Villa", "House", "Building", "Commercial Building", "Office", "Shop", "Open Plot"] = ""
     min_sqft: int = Field(default=0, ge=0, le=10_000_000)
     amenity: Literal["", "Parking", "Swimming pool", "Gym", "Garden", "Balcony", "Water supply", "Electricity", "Boundary wall", "Gated community"] = ""
     sort: Literal["recommended", "price_asc", "price_desc", "newest", "sqft"] = "recommended"
 
 
+def validate_price_filters(filters):
+    validate_advanced(filters)
+    parse_boundary(filters.polygon)
+    if filters.price_mode == "payment" and filters.purpose != "sale":
+        raise HTTPException(422, "Loan payment filtering is only available for properties for sale")
+    low, high = (filters.min_payment, filters.max_payment) if filters.price_mode == "payment" else (filters.min_price, filters.max_price)
+    if high is not None and high < low:
+        raise HTTPException(422, "Maximum must be greater than or equal to minimum")
+
+
+def payment_factor(filters):
+    months = filters.loan_years * 12
+    monthly_rate = filters.annual_rate / 1200
+    installment = monthly_rate / (-math.expm1(-months * math.log1p(monthly_rate))) if monthly_rate else 1 / months
+    return (1 - filters.down_pct / 100) * installment
+
+
+def property_search_query(filters, north=None, south=None, east=None, west=None, include_price=True):
+    query = select(Property).where(Property.active.is_(True), Property.purpose == filters.purpose)
+    if filters.q:
+        cleaned = filters.q.strip().replace("%", "\\%").replace("_", "\\_")
+        if cleaned.lower() == "bangalore":
+            cleaned = "Bengaluru"
+        needle = f"%{cleaned}%"
+        query = query.where(or_(*[getattr(Property, col).ilike(needle, escape="\\") for col in ("city", "address", "pincode", "title", "state")]))
+    query = query.where(Property.sqft >= filters.min_sqft)
+    if filters.beds or filters.baths:
+        query = query.where(Property.kind.notin_(("Open Plot", "Commercial Building", "Office", "Shop")))
+    for column, count, match in ((Property.beds, filters.beds, filters.beds_match), (Property.baths, filters.baths, filters.baths_match)):
+        if count:
+            comparison = {"min": column >= count, "exact": column == count, "max": column <= count}[match]
+            query = query.where(comparison)
+    if filters.kind:
+        query = query.where(Property.kind == filters.kind)
+    if filters.agent:
+        query = query.where(Property.agent == filters.agent)
+    if filters.amenity:
+        query = query.where(Property.amenities.cast(String).like(f'%"{filters.amenity}"%'))
+    if None not in (north, south, east, west):
+        query = query.where(Property.lat.between(south, north), Property.lng.between(west, east))
+    query = apply_boundary(apply_advanced(query, filters), filters.polygon)
+    if include_price:
+        if filters.price_mode == "payment":
+            factor = payment_factor(filters)
+            query = query.where(Property.price * factor >= filters.min_payment)
+            if filters.max_payment is not None:
+                query = query.where(Property.price * factor <= filters.max_payment)
+        else:
+            query = query.where(Property.price >= filters.min_price)
+            if filters.max_price is not None:
+                query = query.where(Property.price <= filters.max_price)
+    return query
+
+
 @app.get("/api/properties")
 def properties(filters: SearchFilters = Depends(), page: int = Query(1, ge=1, le=10000), page_size: int = Query(24, ge=1, le=100), north: float | None = Query(None, ge=-90, le=90), south: float | None = Query(None, ge=-90, le=90), east: float | None = Query(None, ge=-180, le=180), west: float | None = Query(None, ge=-180, le=180), db: Session = Depends(database)):
+    validate_price_filters(filters)
     payload = filters.model_dump() | {"page": page, "page_size": page_size, "north": north, "south": south, "east": east, "west": west}
     key = None
     try:
@@ -215,34 +285,36 @@ def properties(filters: SearchFilters = Depends(), page: int = Query(1, ge=1, le
             return json.loads(found)
     except RedisError:
         pass
-    query = select(Property).where(Property.active.is_(True), Property.purpose == filters.purpose)
-    if filters.q:
-        cleaned = filters.q.strip().replace("%", "\\%").replace("_", "\\_")
-        if cleaned.lower() == "bangalore":
-            cleaned = "Bengaluru"
-        needle = f"%{cleaned}%"
-        query = query.where(or_(*[getattr(Property, col).ilike(needle, escape="\\") for col in ("city", "address", "pincode", "title", "state")]))
-    query = query.where(Property.price >= filters.min_price, Property.beds >= filters.beds, Property.baths >= filters.baths, Property.sqft >= filters.min_sqft)
-    if filters.max_price is not None:
-        query = query.where(Property.price <= filters.max_price)
-    if filters.kind:
-        query = query.where(Property.kind == filters.kind)
-    if filters.agent:
-        query = query.where(Property.agent == filters.agent)
-    if filters.amenity:
-        query = query.where(Property.amenities.cast(String).like(f'%"{filters.amenity}"%'))
-    if None not in (north, south, east, west):
-        query = query.where(Property.lat.between(south, north), Property.lng.between(west, east))
+    query = property_search_query(filters, north, south, east, west)
     total = db.scalar(select(func.count()).select_from(query.subquery()))
     ordering = {"recommended": Property.id.asc(), "price_asc": Property.price.asc(), "price_desc": Property.price.desc(), "newest": Property.created_at.desc(), "sqft": Property.sqft.desc()}[filters.sort]
     records = db.scalars(query.order_by(ordering, Property.id).offset((page - 1) * page_size).limit(page_size)).all()
-    result = {"items": [property_dict(p) for p in records], "total": total, "page": page, "page_size": page_size}
+    items = [property_dict(p) for p in records]
+    if filters.price_mode == "payment":
+        for item in items:
+            item["estimated_payment"] = round(item["price"] * payment_factor(filters))
+    result = {"items": items, "total": total, "page": page, "page_size": page_size}
     if key:
         try:
             cache.setex(key, 60, json.dumps(result))
         except RedisError:
             pass
     return result
+
+
+@app.get("/api/properties/price-distribution")
+def price_distribution(filters: SearchFilters = Depends(), north: float | None = Query(None, ge=-90, le=90), south: float | None = Query(None, ge=-90, le=90), east: float | None = Query(None, ge=-180, le=180), west: float | None = Query(None, ge=-180, le=180), db: Session = Depends(database)):
+    validate_price_filters(filters)
+    query = property_search_query(filters, north, south, east, west, include_price=False)
+    total, highest = db.execute(query.with_only_columns(func.count(Property.id), func.max(Property.price))).one()
+    increment = 5_000_000 if filters.purpose == "sale" else 25_000
+    domain_max = max(increment, math.ceil((highest or increment) / increment) * increment)
+    bins = 30
+    bucket = case((Property.price >= domain_max, bins - 1), else_=cast(func.floor(Property.price / (domain_max / bins)), Integer))
+    counts = [0] * bins
+    for index, count in db.execute(query.with_only_columns(bucket, func.count(Property.id)).group_by(bucket)):
+        counts[min(bins - 1, max(0, index))] = count
+    return {"total": total, "domain_max": domain_max, "counts": counts, "purpose": filters.purpose}
 
 
 @app.get("/api/properties/{property_id}")
@@ -293,6 +365,7 @@ def saved_searches(user: User = Depends(current_user), db: Session = Depends(dat
 
 @app.post("/api/saved-searches", status_code=201)
 def save_search(body: SavedSearchBody, user: User = Depends(current_user), db: Session = Depends(database)):
+    validate_price_filters(body.filters)
     count = db.scalar(select(func.count()).select_from(SavedSearch).where(SavedSearch.user_id == user.id))
     if count >= 50:
         raise HTTPException(422, "You can save up to 50 searches. Remove an older search first.")
@@ -339,6 +412,7 @@ def inquiries(user: User = Depends(current_user), db: Session = Depends(database
 
 
 class PropertyBody(BaseModel):
+    features: PropertyFeatures = Field(default_factory=PropertyFeatures)
     title: str = Field(min_length=5, max_length=160)
     address: str = Field(min_length=5, max_length=250)
     city: str = Field(min_length=2, max_length=100)
@@ -353,7 +427,7 @@ class PropertyBody(BaseModel):
     lat: float = Field(ge=6, le=38)
     lng: float = Field(ge=68, le=98)
     images: list[str] = Field(min_length=1, max_length=10)
-    amenities: list[Literal["Parking", "Security", "Power backup", "Balcony", "Swimming pool", "Gym", "Garden", "Water supply", "Electricity", "Boundary wall", "Gated community"]] = Field(default_factory=list, max_length=11)
+    amenities: list[Literal["Parking", "Security", "Power backup", "Balcony", "Swimming pool", "Gym", "Garden", "Water supply", "Electricity", "Boundary wall", "Gated community", "Lift", "Air conditioning"]] = Field(default_factory=list, max_length=13)
     description: str = Field(min_length=30, max_length=5000)
     area_unit: Literal["sqft", "sqyd", "acre"] = "sqft"
     area_value: float | None = Field(default=None, gt=0, le=10_000_000, allow_inf_nan=False)
@@ -375,6 +449,8 @@ class PropertyBody(BaseModel):
 
     @model_validator(mode="after")
     def valid_listing_type(self):
+        if self.features.carpet_sqft is not None and self.features.carpet_sqft > self.sqft and self.kind != "Open Plot":
+            raise ValueError("Carpet area cannot exceed built-up area")
         if self.kind == "Open Plot":
             if self.purpose != "sale":
                 raise ValueError("Open plots are supported for sale")
@@ -446,7 +522,11 @@ def update_property(property_id: int, body: PropertyBody, user: User = Depends(c
     if not item or item.owner_id != user.id:
         raise HTTPException(404, "Your listing was not found")
     validate_uploaded_images(db, user, body.images)
+    if body.price != item.price:
+        item.previous_price = item.price
     for key, value in body.model_dump().items():
+        if key == "features" and key not in body.model_fields_set:
+            continue  # Legacy editors retain details supplied through the new form.
         setattr(item, key, value)
     db.commit()
     invalidate()
