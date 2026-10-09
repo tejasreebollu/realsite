@@ -1,8 +1,10 @@
 # RealSite Real Estate Portal · India
 
-Updated: 9 October 2026.
+Updated: 10 October 2026.
 
 RealSite is a working real estate portal for India, with a React interface based on the supplied layout references, a FastAPI API, PostgreSQL persistence, Redis search caching and rate limits, and Docker Compose.
+
+The approved portal logo reads **RealSite.in** as live Inter 900 text, with a blue gradient, light shadow and a smaller .in suffix. A blue vector map pin with a white house appears before it. The header, sign-in, footer and demo tour share the identity. See [branding and asset notes](docs/ASSETS.md).
 
 Draw a custom area on the search map with the compact pen cursor, then Apply to filter properties inside it. Remove Boundary restores the original city and retains other filters, including after a refresh. See [drawn-area search](docs/DRAW-SEARCH.md).
 

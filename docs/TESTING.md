@@ -1,6 +1,6 @@
 # RealSite testing and release checks
 
-Updated: 9 October 2026. Run from the repository root. See [verification](VERIFICATION.md) for dated outcomes and [handoff](HANDOFF.md) for setup and data preservation.
+Updated: 10 October 2026. Run from the repository root. See [verification](VERIFICATION.md) for dated outcomes and [handoff](HANDOFF.md) for setup and data preservation.
 
 ## Backend isolation
 
@@ -51,8 +51,13 @@ Other focused workflows are `verify_browser.py`, `verify_demo.py`, `verify_listi
 7. Use demouser to add/edit a listing: choose a map pin, upload photos, review and archive the test listing. Confirm the same account can save/contact other owners' listings. Use a separate account to send a demo enquiry to demouser.
 8. Use admin to archive/restore a demo listing; restore it before ending the demo. Check one phone layout with finger drawing and the Map/List switch.
 9. Open the illustrative 3D model: rotate, Look inside, Reset view and arrow keys. It must remain labelled synthetic.
+10. Check the RealSite.in logo in the header, sign-in, footer and tour: live text, Inter 900, blue map pin/white house, light shadow and .in at 80% size on the same baseline. Check desktop and 320px phone widths; navigation must fit. Ctrl+F5 refreshes cached assets.
 
 The compact cursor SVG should decode at 24x24 pixels. Its CSS hotspot is (3,21); `?v=2` selects the updated asset. On a browser that cannot use the SVG cursor, CSS falls back to a crosshair. Touch input has no mouse cursor. Ctrl+F5 refreshes cached application assets.
+
+## Branding validation scope
+
+The 10 October branding release rebuilt and deployed only the frontend. Focused read-only browser checks confirmed live text/font loading, spacing/shadow, mobile navigation, shared placements and baseline-aligned suffix sizing. The earlier backend/filter/drawing results are retained as historical regression evidence; they were not rerun for the logo change. See [verification](VERIFICATION.md) for final asset hashes and local reports. No database/schema change is required.
 
 ## Release completion
 

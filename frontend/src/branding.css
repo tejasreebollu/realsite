@@ -8,11 +8,33 @@
 .header > .brand-button { flex-shrink: 0; }
 .header-left { margin: 0; }
 .header-right { margin-left: auto; }
-.logo { display: inline-flex; align-items: center; line-height: 1; }
-.logo .logo-image { display: block; width: 170px; height: auto; max-width: none; }
+.logo { display: inline-flex; align-items: center; gap: 7px; line-height: 1; }
+.logo .logo-emblem { display: block; width: 28px; height: 28px; flex-shrink: 0; }
+/* Live Inter text matches the hero headline and stays crisp at every zoom level. */
+.logo .logo-wordmark {
+  display: block;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  font-style: normal;
+  letter-spacing: .15px;
+  line-height: 1.12;
+  white-space: nowrap;
+  color: #0758c9;
+  text-shadow: 0 1px 2px rgb(16 46 86 / 14%);
+}
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .logo .logo-wordmark {
+    background: linear-gradient(180deg, #0879e9, #034bb7);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+}
 
 @media (min-width: 1101px) and (max-width: 1400px) {
   .header { gap: 32px; padding: 0 24px; }
+  .header .logo .logo-wordmark { font-size: 25px; }
   .header-left, .header-right { gap: 18px; }
   .header nav > button:not(.primary) { font-size: 13px; }
 }
@@ -47,7 +69,7 @@
 
 @media (max-width: 760px) {
   .header { gap: 12px; padding: 0 16px; }
-  .header .logo .logo-image { width: 148px; }
+  .header .logo .logo-wordmark { font-size: 22px; }
   .header-right { gap: 8px; }
   .header .account-name, .header .account .role-badge { display: none; }
   .mobile-menu { padding: 5px; }
@@ -55,8 +77,14 @@
 
 @media (max-width: 380px) {
   .header { gap: 9px; padding: 0 12px; }
-  .header .logo .logo-image { width: 138px; }
+  .header .logo .logo-wordmark { font-size: 20px; }
   .header .sign-in { padding: 8px 12px; }
 }
 
-@media(min-width:1101px) and (max-width:1440px){.header-left{gap:14px}.header{gap:24px}.header nav>button:not(.primary){font-size:12px}}
+@media(min-width:1101px) and (max-width:1440px){.header .logo .logo-wordmark{font-size:25px}.header-left{gap:14px}.header{gap:24px}.header nav>button:not(.primary){font-size:12px}}
+
+@media (max-width: 1440px) { .header .logo { gap: 6px; } .header .logo .logo-emblem { width: 26px; height: 26px; } }
+@media (max-width: 760px) { .header .logo { gap: 5px; } .header .logo .logo-emblem { width: 24px; height: 24px; } }
+@media (max-width: 380px) { .header .logo .logo-emblem { width: 22px; height: 22px; } }
+
+.logo .logo-domain { font-size: .8em; letter-spacing: .05px; vertical-align: baseline; }

@@ -1,8 +1,8 @@
 # RealSite project handoff
 
-Updated: 9 October 2026.
+Updated: 10 October 2026.
 
-RealSite is an India real estate portal built with React, FastAPI, PostgreSQL, Redis and local Docker, with Azure evaluation templates. This release includes the latest room/price/India filters, optional listing metadata, pen drawing, closing-overlap repair, original-city restoration and compact pen cursor. The reference screenshots guide the layout; this is a functional demo with synthetic inventory.
+RealSite is an India real estate portal built with React, FastAPI, PostgreSQL, Redis and local Docker, with Azure evaluation templates. This release includes the latest room/price/India filters, optional listing metadata, pen drawing, closing-overlap repair, original-city restoration, compact pen cursor and the approved live-text RealSite.in identity. The reference screenshots guide the layout; this is a functional demo with synthetic inventory.
 
 ## Repository and local access
 
@@ -80,11 +80,15 @@ The polygon and `boundary_q` survive URL navigation and saved searches. One simp
 
 ## Verification and known limits
 
-See [testing](TESTING.md) for commands and [verification](VERIFICATION.md) for dated results and local evidence. Backend checks must use isolated SQLite; fixtures reject PostgreSQL table resets. Live browser scripts can create test accounts and records. Latest regression coverage includes 131 backend cases, geometry/location logic and browser drawing/filter flows.
+See [testing](TESTING.md) for commands and [verification](VERIFICATION.md) for dated results and local evidence. Backend checks must use isolated SQLite; fixtures reject PostgreSQL table resets. Live browser scripts can create test accounts and records. The prior search/filter release passed 131 backend cases, geometry/location logic and browser drawing/filter flows. The branding release validates the frontend build, font loading, responsive layout and shared logo placements; it does not rerun backend regressions.
 
 External map tiles need internet access. Satellite uses Esri; Street View opens an external Google Maps link. Climate-risk data is unavailable. Nearby radius is straight-line distance. RERA/approval fields are owner supplied. EMI/credit presets are illustrative and do not connect to lenders. No real listing feed, valuation, payment, rental application, external notification or verified-agent service is connected. The built-in 3D model is a synthetic canvas demonstration.
 
 Local volumes preserve photos; Azure Blob/CDN, managed databases, versioned migrations, verified onboarding, moderation, password recovery, monitoring, CI/CD and production recovery drills remain future work. The Azure VM templates are an evaluation path; cloud runtime is unverified. See [scope](SCOPE.md) and [Azure deployment](AZURE.md).
+
+## Brand identity
+
+The current identity displays **RealSite.in** (with the .in suffix at 80% of the main lettering size) as live HTML text in Inter, the same family as the homepage headline, using weight 900, a blue gradient, 0.15px letter spacing and a light shadow. It uses the requested mixed case and upright lettering. There is no wordmark image or subtitle. `frontend/public/realsite-emblem.svg` provides a blue map pin with a small white house at revision 4; the favicon reuses it at revision 9. The shared Logo component covers the left header, sign-in and footer; the illustrative 3D model uses the same text and emblem. The existing Google Fonts import includes Inter 900, with Arial fallback. Responsive text sizes are 26/25/22/20px. Earlier PNG design drafts are archived under ignored `artifacts/branding-designs/` and excluded from the published frontend. See [asset notes](ASSETS.md).
 
 ## Source navigation
 
@@ -92,6 +96,7 @@ Local volumes preserve photos; Azure Blob/CDN, managed databases, versioned migr
 | --- | --- |
 | Search/filter UI and routes | `frontend/src/main.jsx`, `api.js`, `room-filters.jsx`, `price-filter.jsx`, `more-filters.jsx` |
 | Map drawing and location return | `map.jsx`, `map-draw.jsx`, `stroke-shape.js`, `boundary-search.js`, `map-draw.css` |
+| Brand identity | `frontend/src/branding.css`, shared Logo in `main.jsx`, `frontend/public/realsite-emblem.svg`, `favicon.svg` |
 | Cursor / illustrative model | `frontend/public/cursors/pen.svg`, `frontend/public/tours/demo-3d.html` |
 | Listing workflow and facts | `listing.jsx`, `listing-features.jsx`, `property-facts.jsx` |
 | Shared API predicates | `backend/app/main.py`, `advanced_filters.py`, `map_boundary.py` |

@@ -1,10 +1,14 @@
 # Assets and visual references
 
-Updated: 9 October 2026.
+Updated: 10 October 2026.
 
 The five screenshots supplied on 8 October 2026 are layout references for the homepage and sale/rental split map/list views. RealSite uses its own portal identity with these layouts.
 
-The RealSite logo combines a blue location pin, a white house and a teal accent with the RealSite wordmark. The editable vector lockup is `frontend/public/realsite-logo.svg`; its matching icon is `frontend/public/favicon.svg`. There is no subtitle below the logo. The mark and service illustrations are original SVG code. No proprietary valuation, listing feed, map dataset or third-party logo asset has been downloaded.
+The current logo uses live HTML text reading **RealSite.in** (with the .in suffix at 80% of the main lettering size), in the same Inter family as the homepage headline, with weight 900, a blue gradient, 0.15px letter spacing and a light shadow. Lettering is upright and uses the user's requested mixed case. It is rendered by the browser rather than downscaled from a generated bitmap. Inter weights 400-900 are requested through the existing Google Fonts stylesheet; Arial remains the fallback.
+
+A compact blue SVG map pin with a small white house precedes the text. Its shape and vertical gradient mirror across the centre line. It is editable in `frontend/public/realsite-emblem.svg`; the favicon uses the same symbol. Header, sign-in, footer and illustrative 3D model share the live-text identity, with smaller text on phones and no subtitle.
+
+Earlier generated wordmark PNG drafts are archived locally under ignored `artifacts/branding-designs/`. They are excluded from the released frontend and Git commit. The superseded `realsite-logo.svg` is removed; active lettering is live text. Service illustrations remain original SVG code. No proprietary valuation, listing feed or map dataset has been downloaded.
 
 Illustrative sample photos are fetched from `images.unsplash.com` by `scripts/prepare_local.py`. They are not verified Indian property photographs or pictures of the seeded addresses. The local source mapping is:
 

@@ -1,6 +1,6 @@
 # Architecture
 
-Updated: 9 October 2026.
+Updated: 10 October 2026.
 
 ```mermaid
 flowchart LR
@@ -13,6 +13,10 @@ flowchart LR
 ```
 
 React 18 and Vite build static assets served by unprivileged nginx. The same origin proxies `/api/*` to FastAPI. PostgreSQL and Redis have no host ports. Backend containers run as a non-root user. The only local host binding is `127.0.0.1:8090`.
+
+## Frontend identity
+
+The shared Logo component in `frontend/src/main.jsx` renders RealSite.in as HTML text rather than a wordmark image. `branding.css` defines Inter 900, a blue gradient, light shadow, responsive 26/25/22/20px sizes and a baseline-aligned .in suffix at 80%. The SVG map-pin/house emblem is `frontend/public/realsite-emblem.svg`; the favicon matches it. The standalone tour uses the same live-text structure. Inter is requested from Google Fonts, with Arial fallback. Older bitmap design drafts are archived locally and excluded from the published frontend.
 
 ## Persistence
 

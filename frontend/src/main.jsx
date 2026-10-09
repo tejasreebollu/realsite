@@ -105,7 +105,7 @@ function App() {
   </Context.Provider>;
 }
 
-function Logo() { return <span className="logo"><img className="logo-image" src="/realsite-logo.svg" alt="RealSite" width="190" height="48" /></span>; }
+function Logo() { return <span className="logo"><img className="logo-emblem" src="/realsite-emblem.svg?v=4" alt="" aria-hidden="true" width="64" height="64" /><span className="logo-wordmark">RealSite<span className="logo-domain">.in</span></span></span>; }
 
 function Header({ route, logout, signIn }) {
   const { user, navigate, setInfo } = useApp();

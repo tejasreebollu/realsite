@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>RealSite map pin with house</title>
+  <defs><linearGradient id="brand" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#1686ec"/><stop offset="1" stop-color="#0343b4"/></linearGradient></defs>
+  <path fill="url(#brand)" d="M32 3C18.75 3 8 13.75 8 27c0 16 24 34 24 34s24-18 24-34C56 13.75 45.25 3 32 3Z"/>
+  <path fill="#fff" fill-rule="evenodd" d="M17 27 32 15 47 27 44 31 42 29V40H22V29L20 31ZM29 40H35V31H29Z"/>
+</svg>

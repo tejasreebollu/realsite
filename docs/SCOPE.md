@@ -1,6 +1,6 @@
 # RealSite feature scope
 
-Updated: 9 October 2026.
+Updated: 10 October 2026.
 
 RealSite is a real estate portal for **India** using React, FastAPI, PostgreSQL, Azure, Redis, and local Docker. The supplied screenshots are visual references, not application specifications or instructions to scrape third-party data.
 
@@ -21,6 +21,8 @@ RealSite is a real estate portal for **India** using React, FastAPI, PostgreSQL,
 | Finance | Adjustable home loan EMI calculator, INR price histogram/slider and estimated monthly-payment filtering with demo financing assumptions |
 | Agents | Fictional sample agent cards with filtered sample listings |
 | Platform | Four-service Docker stack, readiness, Redis caching/rate limits, Azure evaluation deployment |
+
+The approved identity uses live **RealSite.in** text in Inter 900, a smaller .in suffix and a blue SVG map pin containing a white house. It is shared across the header, sign-in, footer and synthetic tour, with responsive sizing and a light shadow.
 
 The implementation retains the reference's blue/white palette and key desktop layouts. Indian addresses, INR amounts, RealSite branding, illustrative photography, and OpenStreetMap replace the US content and proprietary reference integrations. Full feature parity with the reference platform remains separate work.
 

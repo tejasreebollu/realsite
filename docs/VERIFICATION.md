@@ -1,8 +1,8 @@
-# Verification record · current release 9 October 2026
+# Verification record · current release 10 October 2026
 
-## Current release - 9 October 2026
+## Current release - 10 October 2026
 
-All maintained Markdown documents have been synchronised with the latest implementation. [Project handoff](HANDOFF.md) and [testing guide](TESTING.md) cover source navigation, local setup/update, demo accounts, backups, validation and remaining integrations. The reference-to-India scope now identifies polygon search as implemented and reserves multiple regions/holes for future work.
+All maintained Markdown documents have been synchronised with the latest implementation. [Project handoff](HANDOFF.md) and [testing guide](TESTING.md) cover source navigation, local setup/update, demo accounts, backups, validation and remaining integrations. The reference-to-India scope identifies polygon search as implemented and reserves multiple regions/holes for future work. The 10 October update records the final approved RealSite.in identity; earlier backend/search results below belong to the preceding release.
 
 | Current check | Outcome |
 | --- | --- |
@@ -13,7 +13,8 @@ All maintained Markdown documents have been synchronised with the latest impleme
 | India More Filters/listing metadata/3D model | 14 checks passed |
 | Compact pen cursor | 24x24 SVG decoded; nib hotspot (3,21), held drawing, Move map, preview and Redraw verified |
 | Local readiness | PostgreSQL and Redis connected |
-| Production frontend | Built and deployed; `index-BSvMriyh.css`, `index-BZngyupu.js` |
+| Final brand identity | Live RealSite.in text, Inter 900, blue house/map-pin SVG, light shadow; .in at 80% with baseline alignment |
+| Production frontend | Built and deployed; latest branding assets `index-BUXfXVy9.css`, `index-DejVZU8F.js` |
 
 The latest browser drawing checks include Hyderabad and the other four demo cities, all-India searches, price/room retention, refresh, redraw, boundary removal, Back/Forward and phone touch input. A 24px thin pen cursor remains visible during drawing; Move map and finished-area editing use a hand. Local demo volumes were retained. Browser filter checks create their own accounts and archive their own temporary listings; these history rows can increase total record counts. Existing customer/demo listing edits are preserved.
 
@@ -258,3 +259,14 @@ Applying a drawn area now remembers the previous text location as `boundary_q` i
 - **12 browser checks passed** against the deployed PostgreSQL portal. The reported Hyderabad flow restores the city search, result IDs, markers and map after drawing and reload. All five demo cities and a location-free search retain price/room criteria through removal and Back/Forward. Existing pen drawing, corner adjustment, loop repair, mouse/touch and three responsive layouts pass without JavaScript errors.
 
 Evidence: `artifacts/pen-draw-results.json`, `artifacts/boundary-hyderabad-restored.png` and `frontend/scripts/verify-boundary-search.mjs`. These results were recorded before the documentation release commit.
+
+## Approved RealSite.in identity - 10 October 2026
+
+The final identity uses live HTML text reading **RealSite.in**, matching the homepage's Inter family at weight 900. Blue gradient faces, +0.15px letter spacing and a light 1px-offset/2px-blur shadow replace the generated bitmap lettering. The .in suffix is 80% of the main text size on the same baseline. The emblem is a blue SVG map pin containing a small white house, shared with the favicon. Header, sign-in, footer and illustrative tour use the same identity with responsive sizing and no subtitle.
+
+- Production frontend build and web-only deployment passed. Final assets: `index-BUXfXVy9.css`, `index-DejVZU8F.js`.
+- Eight standard/high-density layouts at 1920, 1440, 390 and 320px confirmed exact live text, Inter 900 loading, spacing/shadow, non-overlapping header groups, mobile navigation and no page overflow or JavaScript errors. The final suffix adjustment then passed four desktop/phone layouts, confirming the 0.8 size ratio, baseline alignment and shared placements. Visual inspection confirmed crisp text and the smaller suffix.
+- Unused PNG design drafts are archived under ignored `artifacts/branding-designs/`, excluded from the frontend and commit. The superseded wordmark SVG is removed. Emblem revision 4 and favicon revision 9 refresh cached artwork.
+- Backend code and database/upload volumes were retained. Backend/filter regression results above are from the prior release and were not rerun for this branding update. This release requires no schema migration or new account setup.
+
+Evidence remains local: `artifacts/live-brand-results.json`, `smaller-domain-results.json`, `logo-smaller-domain.png` and `live-brand-{ratio}-{width}.png`. Git history identifies the released source revision.

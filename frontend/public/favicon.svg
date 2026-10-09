@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <path d="M24 2C13 2 5 10.5 5 21c0 12 19 25 19 25s19-13 19-25C43 10.5 35 2 24 2Z" fill="#0041d9"/>
-  <path d="M33 4.3A19 19 0 0 1 43 21" fill="none" stroke="#16b8a6" stroke-width="4" stroke-linecap="round"/>
-  <path d="m12 22 12-10 12 10" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M15 22v10h6v-8h6v8h6V22l-9-7.5Z" fill="#fff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>RealSite.in</title>
+  <defs><linearGradient id="brand" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#1686ec"/><stop offset="1" stop-color="#0343b4"/></linearGradient></defs>
+  <path fill="url(#brand)" d="M32 3C18.75 3 8 13.75 8 27c0 16 24 34 24 34s24-18 24-34C56 13.75 45.25 3 32 3Z"/>
+  <path fill="#fff" fill-rule="evenodd" d="M17 27 32 15 47 27 44 31 42 29V40H22V29L20 31ZM29 40H35V31H29Z"/>
 </svg>

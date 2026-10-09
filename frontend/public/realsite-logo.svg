@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 48" role="img" aria-label="RealSite logo">
-  <path d="M24 2C13 2 5 10.5 5 21c0 12 19 25 19 25s19-13 19-25C43 10.5 35 2 24 2Z" fill="#0041d9"/>
-  <path d="M33 4.3A19 19 0 0 1 43 21" fill="none" stroke="#16b8a6" stroke-width="4" stroke-linecap="round"/>
-  <path d="m12 22 12-10 12 10" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M15 22v10h6v-8h6v8h6V22l-9-7.5Z" fill="#fff"/>
-  <text x="56" y="35" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="700" letter-spacing="-1" fill="#14253d">Real<tspan fill="#0041d9">Site</tspan></text>
-</svg>

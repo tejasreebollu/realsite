@@ -1,6 +1,6 @@
 # Client demo
 
-Updated: 9 October 2026.
+Updated: 10 October 2026.
 
 Open **http://localhost:8090** and use **Sign in**. The public demo uses one account for buying, renting and selling.
 
@@ -10,6 +10,10 @@ Open **http://localhost:8090** and use **Sign in**. The public demo uses one acc
 | Administrator | `admin@demo.example.com` | `AdminDemo@2026` | Inventory metrics, filters, paginated listings/accounts/enquiries, archive and restore |
 
 The generic account displays **demouser** with role **User**. The old buyer and seller demo emails no longer sign in. Public registration creates a user account without asking for buyer/seller account type. All users can save homes, contact owners and manage their own properties. Administration remains restricted to provisioned administrators.
+
+## Presentation branding
+
+The approved identity is **RealSite.in**, with a blue house/map-pin emblem, bold live text, a light shadow and a smaller .in suffix. It appears in the header, sign-in, footer and illustrative tour. Use Ctrl+F5 after updating the local frontend, then check the desktop and phone layouts before presenting. No logo subtitle is displayed.
 
 ## Inventory
 
