@@ -23,6 +23,11 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(254), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(256))
     role: Mapped[str] = mapped_column(String(20), default="user", server_default="user")
+    active: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
+    phone: Mapped[str] = mapped_column(String(20), default="", server_default="")
+    city: Mapped[str] = mapped_column(String(100), default="", server_default="")
+    bio: Mapped[str] = mapped_column(Text, default="", server_default="")
+    avatar_url: Mapped[str] = mapped_column(String(250), default="", server_default="")
     demo: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
 
@@ -105,4 +110,38 @@ class Inquiry(Base):
     message: Mapped[str] = mapped_column(Text)
     phone: Mapped[str] = mapped_column(String(20))
     visit_date: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class AgentProfile(Base):
+    __tablename__ = "agent_profiles"
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    agency: Mapped[str] = mapped_column(String(120))
+    bio: Mapped[str] = mapped_column(Text)
+    service_areas: Mapped[list] = mapped_column(JSON)
+    experience_years: Mapped[int] = mapped_column(Integer)
+    registration_number: Mapped[str] = mapped_column(String(100), default="")
+    publish_phone: Mapped[bool] = mapped_column(Boolean, default=False)
+    status: Mapped[str] = mapped_column(String(20), default="pending", index=True)
+    review_note: Mapped[str] = mapped_column(String(1000), default="")
+    reviewed_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class EmailChange(Base):
+    __tablename__ = "email_changes"
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    email: Mapped[str] = mapped_column(String(254))
+    token_hash: Mapped[str] = mapped_column(String(64))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class AccountAudit(Base):
+    __tablename__ = "account_audit"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    actor_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    target_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    action: Mapped[str] = mapped_column(String(60))
+    reason: Mapped[str] = mapped_column(String(1000), default="")
+    changes: Mapped[dict] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)

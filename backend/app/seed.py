@@ -27,7 +27,7 @@ def seed(db):
                 db.flush()
                 if role == "user" and not had_legacy:
                     initialise_user = True
-            elif not user.demo or user.role != role:
+            elif not user.demo or (user.role != role and not (role == "user" and user.role == "agent")):
                 raise RuntimeError(f"Reserved demo email already belongs to another account: {email}")
             accounts[role] = user
     rng = random.Random(42)
@@ -117,7 +117,7 @@ def consolidate_demo_users(db):
             if not user.demo or user.role not in {"user", "buyer", "seller"}:
                 raise RuntimeError(f"Reserved demo email already belongs to another account: {email}")
             legacy.append(user)
-    if target is not None and (not target.demo or target.role != "user"):
+    if target is not None and (not target.demo or target.role not in {"user", "agent"}):
         raise RuntimeError("Reserved demo email already belongs to another account: demouser@demo.example.com")
     if not legacy:
         return target, False

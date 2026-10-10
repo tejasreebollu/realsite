@@ -13,6 +13,14 @@ def migrate(engine):
             connection.execute(text("ALTER TABLE users ALTER COLUMN role SET DEFAULT 'user'"))
         if "demo" not in columns:
             connection.execute(text("ALTER TABLE users ADD COLUMN demo BOOLEAN NOT NULL DEFAULT false"))
+        user_additions = {
+            "active": "BOOLEAN NOT NULL DEFAULT true", "phone": "VARCHAR(20) NOT NULL DEFAULT ''",
+            "city": "VARCHAR(100) NOT NULL DEFAULT ''", "bio": "TEXT NOT NULL DEFAULT ''",
+            "avatar_url": "VARCHAR(250) NOT NULL DEFAULT ''",
+        }
+        for name, definition in user_additions.items():
+            if name not in columns:
+                connection.execute(text(f"ALTER TABLE users ADD COLUMN {name} {definition}"))
         columns = {c["name"] for c in inspect(connection).get_columns("properties")}
         if "seed_key" not in columns:
             connection.execute(text("ALTER TABLE properties ADD COLUMN seed_key VARCHAR(120)"))

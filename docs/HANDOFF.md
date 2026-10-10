@@ -1,8 +1,8 @@
 # RealSite project handoff
 
-Updated: 10 October 2026.
+Updated: 11 October 2026.
 
-RealSite is an India real estate portal built with React, FastAPI, PostgreSQL, Redis and local Docker, with Azure evaluation templates. This release includes the latest room/price/India filters, optional listing metadata, pen drawing, closing-overlap repair, original-city restoration, compact pen cursor and the approved live-text RealSite.in identity. The reference screenshots guide the layout; this is a functional demo with synthetic inventory.
+RealSite is an India real estate portal built with React, FastAPI, PostgreSQL, Redis and local Docker, with Azure evaluation templates. This release includes the latest room/price/India filters, optional listing metadata, pen drawing, closing-overlap repair, original-city restoration, compact pen cursor, the approved live-text RealSite.in identity, editable profiles/account settings, reviewed agent profiles, audited admin account controls, visible pins during drawing and a thin cyan marker hover highlight. The reference screenshots guide the layout; this is a functional demo with synthetic inventory.
 
 ## Repository and local access
 
@@ -27,6 +27,10 @@ The workspace was renamed from the original project name. Run commands from the 
 | Administrator | `admin@demo.example.com` | `AdminDemo@2026` |
 
 A single public account buys, sells and rents. Owners manage their own listings; administrators use `/admin`. Separate buyer/seller demo logins were consolidated into demouser. The fixed seed contains 100 fictional homes across Hyderabad, Bengaluru, Mumbai, Pune and New Delhi: 12 sale and 8 rental homes per city. Additional owner/test records can increase live totals. Presentation edits and archives persist. The sample photographs, agents, locations, prices and 3D model are illustrative. See [client demo](DEMO.md).
+
+## Profile and account workflows
+
+Click the header avatar or open `/profile`: My Profile edits photo/name/mobile/city/biography; Account Settings changes password/email; Agent Profile submits professional details for admin review. An approved agent keeps the same login and public user permissions. Admin has Accounts, Agent reviews and Account activity tabs. Suspension revokes all sessions and hides the public agent; existing listings require separate archival. Demouser/admin credentials remain fixed; register a separate account for credential-change demonstrations. Local email verification displays a clearly labelled unsent demo code; Azure forces configured SMTP. See [user management](USER-MANAGEMENT.md) for API, privacy, configuration and limitations.
 
 ## Start and update locally
 
@@ -65,7 +69,7 @@ docker compose cp api:/app/uploads "artifacts/uploads-$backupTag"
 
 Pause listing/account writes during a backup intended as a consistent restore pair. Verify the dump and photo copy completed before updating. Restore to a separate evaluation stack and validate records/photos before switching users to it. The repository's public demo JSON is not a database backup. Backups, screenshots, local credentials and browser tooling are ignored and excluded from the release.
 
-Compatibility startup upgrades are additive and repeatable. This release adds nullable property `features` JSON and `previous_price`; it preserves existing fields and enriches missing synthetic metadata once. Polygon and original-city context are stored in existing saved-search JSON, requiring no additional schema change. Prefer fixing forward over rolling an older application onto a newer schema without validation.
+Compatibility startup upgrades are additive and repeatable. This release adds compatible user profile/active columns and agent_profiles/email_changes/account_audit tables, alongside nullable property `features` JSON and `previous_price`; it preserves existing fields and enriches missing synthetic metadata once. Polygon and original-city context are stored in existing saved-search JSON, requiring no additional schema change. Prefer fixing forward over rolling an older application onto a newer schema without validation.
 
 ## Demonstrate the latest workflows
 
@@ -73,14 +77,15 @@ Compatibility startup upgrades are additive and repeatable. This release adds nu
 - Price: List Price has the inventory histogram, range handles and INR inputs. Monthly Payment uses editable demo loan assumptions. Rent uses monthly asking rent.
 - India Filters: source/status, maintenance, furnishing, parking, area, amenities, views, tours, plot requirements, nearby radius and listing updates. Apply commits a draft; Reset all filters clears criteria and returns to the original city if removing an area.
 - Listings: separate property sale, plot sale and rental forms; Details, Location, Photos, Review. Images upload, locations use a map pin, and optional details power filters.
-- Draw: press/hold, trace an area and release. A thin 24px pen cursor marks the nib; Move map and finished-area editing use a hand. Redraw retries; white corners refine; Apply filters real result counts and markers. Small closing overlaps are repaired, while substantial crossed shapes remain invalid.
+- Draw: filtered property markers stay visible while drawing and previewing; their clicks are disabled until drawing ends. Press/hold, trace an area and release. A thin 24px pen cursor marks the nib; Move map and finished-area editing use a hand. Redraw retries; white corners refine; Apply filters real result counts and markers. Small closing overlaps are repaired, while substantial crossed shapes remain invalid.
+- Marker hover: hovering a result card highlights the matching pin with a 1px cyan border and soft glow. Mouse leave clears it; sale and rental cards use the same behaviour.
 - Boundary removal: Hyderabad -> Draw -> Apply -> refresh -> Remove Boundary restores Hyderabad and keeps other filters. All-India searches return to all India. Older links without original-location context keep the all-India fallback.
 
 The polygon and `boundary_q` survive URL navigation and saved searches. One simple polygon of up to 64 vertices is supported, including concavity and edge points. Multiple regions and holes remain future work. See [drawing instructions](DRAW-SEARCH.md).
 
 ## Verification and known limits
 
-See [testing](TESTING.md) for commands and [verification](VERIFICATION.md) for dated results and local evidence. Backend checks must use isolated SQLite; fixtures reject PostgreSQL table resets. Live browser scripts can create test accounts and records. The prior search/filter release passed 131 backend cases, geometry/location logic and browser drawing/filter flows. The branding release validates the frontend build, font loading, responsive layout and shared logo placements; it does not rerun backend regressions.
+See [testing](TESTING.md) for commands and [verification](VERIFICATION.md) for dated results and local evidence. Backend checks must use isolated SQLite; fixtures reject PostgreSQL table resets. Live browser scripts can create test accounts and records. The user-management update passed 149 isolated backend cases and 11 focused live account checks, including 320/390px layouts. Original fields in all six business tables and all 21 uploaded photos match the pre-upgrade snapshot. The drawing follow-up passed 14 read-only browser checks, and sale/rental cyan hover passed two focused checks. The final deployed frontend assets are `index-CUesXYZG.css` and `index-aQK23O7b.js`. Earlier price/filter/branding checks are historical evidence; they were not repeated for these visual refinements.
 
 External map tiles need internet access. Satellite uses Esri; Street View opens an external Google Maps link. Climate-risk data is unavailable. Nearby radius is straight-line distance. RERA/approval fields are owner supplied. EMI/credit presets are illustrative and do not connect to lenders. No real listing feed, valuation, payment, rental application, external notification or verified-agent service is connected. The built-in 3D model is a synthetic canvas demonstration.
 
@@ -99,6 +104,7 @@ The current identity displays **RealSite.in** (with the .in suffix at 80% of the
 | Brand identity | `frontend/src/branding.css`, shared Logo in `main.jsx`, `frontend/public/realsite-emblem.svg`, `favicon.svg` |
 | Cursor / illustrative model | `frontend/public/cursors/pen.svg`, `frontend/public/tours/demo-3d.html` |
 | Listing workflow and facts | `listing.jsx`, `listing-features.jsx`, `property-facts.jsx` |
+| Profiles, agent review, account security | `backend/app/accounts.py`, `frontend/src/profile.jsx`, `account-admin.jsx`, `profile.css` |
 | Shared API predicates | `backend/app/main.py`, `advanced_filters.py`, `map_boundary.py` |
 | Persistence / demo / uploads | `models.py`, `migrations.py`, `seed.py`, `uploads.py` |
 | Validation | `backend/tests/`, `frontend/scripts/`, `scripts/verify_*.py` |

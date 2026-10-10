@@ -22,6 +22,12 @@ services:
       SEED_DEMO: ${SEED_DEMO:-true}
       DEMO_ACCOUNTS_ENABLED: ${DEMO_ACCOUNTS_ENABLED:-true}
       UPLOAD_DIR: /app/uploads
+      ACCOUNT_EMAIL_MODE: ${ACCOUNT_EMAIL_MODE:-demo}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
     volumes:
       - property_images:/app/uploads
     depends_on:

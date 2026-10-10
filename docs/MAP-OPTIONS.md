@@ -1,6 +1,6 @@
 # Map Options
 
-Updated: 9 October 2026.
+Updated: 11 October 2026.
 
 Open a Buy or Rent search and click **Map** beside the zoom controls at the bottom right of the map. On mobile, first use the floating Map button to switch from the listing view to the map.
 
@@ -24,4 +24,4 @@ References: [Esri basemap layers](https://developers.arcgis.com/esri-leaflet/map
 
 ## Draw a boundary
 
-Draw opens Pen mode: hold, draw around an area and release. A compact 24px pen cursor marks the drawing point; Move map and finished-area refinement use a hand. Use Redraw or Edit area to adjust a boundary, then Apply. Results are filtered on the server; URLs and saved searches retain the polygon and original location. Remove Boundary restores the original city and retains price, room and other filters, even after a refresh. An original all-India search returns to all India. Older area links without return context use the all-India fallback. See [drawn-area search](DRAW-SEARCH.md).
+Draw opens Pen mode: hold, draw around an area and release. Filtered price pins remain visible in Pen, Move map and preview, with popup clicks disabled until drawing ends. Hovering a result card adds a thin cyan border and soft glow to its matching map pin. A compact 24px pen cursor marks the drawing point; Move map and finished-area refinement use a hand. Use Redraw or Edit area to adjust a boundary, then Apply. Results are filtered on the server; URLs and saved searches retain the polygon and original location. Remove Boundary restores the original city and retains price, room and other filters, even after a refresh. An original all-India search returns to all India. Older area links without return context use the all-India fallback. See [drawn-area search](DRAW-SEARCH.md).

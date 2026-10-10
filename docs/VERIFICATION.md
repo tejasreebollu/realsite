@@ -1,6 +1,45 @@
-# Verification record · current release 10 October 2026
+# Verification record · release 11 October 2026
 
-## Current release - 10 October 2026
+## Release overview and final cyan highlight
+
+Updated: 11 October 2026.
+
+The release combines self-service profiles, protected account settings, reviewed agent profiles and audited administration with visible pins during drawing and the accepted cyan hover treatment. All 15 Markdown documents have been reviewed and synchronised, including [handoff](HANDOFF.md), [user management](USER-MANAGEMENT.md), setup, demo, scope and feature guides. There are no maintained Word editions in this repository.
+
+Release preparation validated all 15 Markdown documents and 83 local links, the public snapshot of 100 synthetic properties, the deployed account routes, readiness, local/Azure Compose syntax and Git diff whitespace. Final checks are recorded in ignored `artifacts/release-2026-10-11.json`. The remote branch was fetched before publication; use an ordinary push and confirm the working tree and `HEAD...origin/main` after it.
+
+The final web build is deployed locally as `index-CUesXYZG.css` / `index-aQK23O7b.js`. Two focused read-only Chrome checks confirmed that hovering sale and rental result cards highlights exactly the matching marker, keeps its border at 1px, uses cyan `#22d3ee` with a soft glow, and clears the highlight on mouse leave. No JavaScript errors occurred. Evidence is local in ignored `artifacts/cyan-hover-results.json` and `cyan-hover-sale.png` / `cyan-hover-rent.png`.
+
+The account and drawing evidence below was collected during this implementation. The later hover change only modifies frontend CSS; the 149 backend cases and 11 account checks were not rerun for it. Fourteen drawing checks and the two hover checks are the subsequent focused validation. PostgreSQL, Redis, existing volumes and customer data were preserved. Real SMTP delivery and Azure runtime remain unverified.
+
+## Drawing marker visibility - 11 October 2026
+
+The drawing-mode CSS previously hid property price markers. They now remain visible throughout Pen, Move map, the live stroke, preview and Redraw. Pointer events are disabled on property markers during drawing so tracing across a pin does not open its popup. Applying updates the area search; cancelling retains the existing filters and restores marker interaction.
+
+The frontend-only rebuild is deployed locally with `index-BDTiLFSx.css` / `index-CRBWwJse.js`. The expanded read-only drawing browser workflow passed **14 checks**, including filtered sale/rental markers, geometry/counts/histogram, mouse/finger input, phone layouts, Apply/Cancel, refresh and original-city restoration. No JavaScript page errors were recorded. Evidence: ignored `artifacts/pen-draw-results.json` and `draw-visible-markers-sale.png` / `draw-visible-markers-rent.png`. The account update's 149 backend cases below remain prior evidence; backend code and data were unchanged by this CSS fix.
+
+## User management - 11 October 2026
+
+Profile editing, account settings, reviewed agent profiles and audited account administration are implemented and deployed locally. Documentation includes [user management](USER-MANAGEMENT.md), SMTP/local-demo configuration, [handoff](HANDOFF.md) and [testing](TESTING.md). These source changes, tests and documentation form the current release. Use Git history for the published revision; local screenshots, tooling, backups and customer uploads are excluded from the commit.
+
+| Check | Outcome |
+| --- | --- |
+| Complete isolated backend suite | 149 passed; one existing Starlette/AnyIO deprecation warning |
+| Account browser workflow | 11 checks passed; no JavaScript page errors |
+| Responsive profile/admin screens | No page overflow at 320px and 390px; admin tabs wrap |
+| API/web production builds | Passed; deployed `index-B5yxdYDY.css`, `index-BxSJxX7n.js` |
+| Local readiness | PostgreSQL and Redis connected |
+| Original business records | All original fields preserved: 23 accounts, 139 properties, 21 upload records, 8 favourites, 10 saved searches, 9 enquiries |
+| Original uploaded images | All 21 served photos match their pre-upgrade bytes |
+| Documentation | 15 Markdown files / 73 local links validated; diff whitespace check passed |
+
+The live browser check covers the login gate, registration, profile/photo persistence, password session revocation, labelled local email verification, agent application/approval/resubmission, owner-ID listing searches, suspension/reactivation, admin edit reasons and account activity. Test accounts are suspended, agent profiles rejected and their three test listings archived. Their records and audit history remain as additional data. Existing demo/customer records and volumes are preserved.
+
+Backups and evidence are excluded from Git under `artifacts/`: `before-user-management.sql`, `before-user-management-uploads/`, `accounts-original-records.json`, `account-data-preservation.json`, `account-management-results.json` and account screenshots. The original-record snapshot contains private database values and must stay local. Backend fixtures use an explicit isolated SQLite database and never reset live PostgreSQL.
+
+SMTP TLS transport and absence of verification codes in SMTP responses are covered with a mocked provider. No external email was sent; real provider delivery, Azure runtime, registration verification, password reset, MFA, independent agent credential verification and production certification remain outside these checks. All following release sections describe earlier validation, not this local feature release.
+
+## Previous release - 10 October 2026
 
 All maintained Markdown documents have been synchronised with the latest implementation. [Project handoff](HANDOFF.md) and [testing guide](TESTING.md) cover source navigation, local setup/update, demo accounts, backups, validation and remaining integrations. The reference-to-India scope identifies polygon search as implemented and reserves multiple regions/holes for future work. The 10 October update records the final approved RealSite.in identity; earlier backend/search results below belong to the preceding release.
 

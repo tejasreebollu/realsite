@@ -1,6 +1,6 @@
 # RealSite feature scope
 
-Updated: 10 October 2026.
+Updated: 11 October 2026.
 
 RealSite is a real estate portal for **India** using React, FastAPI, PostgreSQL, Azure, Redis, and local Docker. The supplied screenshots are visual references, not application specifications or instructions to scrape third-party data.
 
@@ -10,16 +10,16 @@ RealSite is a real estate portal for **India** using React, FastAPI, PostgreSQL,
 | --- | --- |
 | Homepage | Header, left rail, photographic hero, search, card carousels, service cards, city links |
 | Buy/rent results | Split map/list, sale/rental variants, INR price cards, photo paging, favourites |
-| Search | City/address/PIN search, suggestions, filters including plus-count room choices and exact-match checkboxes, India More Filters, multi-amenity/area/status/source/tour criteria, sorting, pagination, viewport, drawn-polygon and nearby-distance filtering |
+| Search | City/address/PIN search, suggestions, filters including plus-count room choices and exact-match checkboxes, India More Filters, multi-amenity/area/status/source/tour criteria, sorting, pagination, viewport, drawn-polygon and nearby-distance filtering; visible pins while drafting and thin cyan linked-marker hover |
 | Map Options | Automatic map, satellite imagery, external Street View access; climate-risk selectors with an explicit unavailable-data status |
 | Property details | Gallery, facts, amenities, location, enquiry form, share link |
-| Accounts | Single public-account registration, login, logout, expiring private sessions, provisioned admin role |
+| Accounts | Single public-account registration, login, logout, expiring private sessions, profile/photo edits, password changes, email-change verification, provisioned admin role |
 | Personal workspace | Favourites, saved searches, recent views, enquiry inbox |
 | Sellers/owners | Separate property sale, plot sale and rental forms, optional India search attributes, map picker, photo uploads, edit/archive and enquiries |
-| Administration | Inventory metrics, city/status filters, paginated listings/accounts/enquiries, archive and restore; admin-only API and UI |
+| Administration | Inventory metrics, city/status filters, paginated listings/accounts/enquiries, archive/restore, account edits/suspension, agent reviews and account activity; admin-only API and UI |
 | Client demo | 100 synthetic properties across five cities, generic user and admin logins, saved homes/searches/enquiries and JSON snapshot |
 | Finance | Adjustable home loan EMI calculator, INR price histogram/slider and estimated monthly-payment filtering with demo financing assumptions |
-| Agents | Fictional sample agent cards with filtered sample listings |
+| Agents | Single-account applications, admin approval/rejection, approved directory, service cities, optional public phone and owner-ID listing searches |
 | Platform | Four-service Docker stack, readiness, Redis caching/rate limits, Azure evaluation deployment |
 
 The approved identity uses live **RealSite.in** text in Inter 900, a smaller .in suffix and a blue SVG map pin containing a white house. It is shared across the header, sign-in, footer and synthetic tour, with responsive sizing and a light shadow.
@@ -34,14 +34,14 @@ The implementation retains the reference's blue/white palette and key desktop la
 | Trust | Owner/agent identity checks, listing review, independent verification of supplied RERA/approval details, reporting and moderation |
 | Photos | Managed Azure Blob storage/CDN, malware scanning, quotas and orphan cleanup; local uploads, ownership checks and resizing are implemented |
 | Maps | Address geocoding, official city boundaries, multiple drawn regions/holes, clustered pins, neighbourhood data, contracted tile service |
-| Communication | Two-way messaging, email/SMS/WhatsApp delivery, consent/preferences, notification jobs |
-| Accounts | Email verification, password reset, optional MFA, social login, account export/deletion |
+| Communication | Two-way messaging, notification email/SMS/WhatsApp and jobs; SMTP support for email changes is implemented but provider delivery is unconfigured locally |
+| Accounts | Initial-registration email verification, password reset, optional MFA, social login, account export/deletion |
 | Rentals | Applications, documents, background-check provider, lease workflow, rent/payment integrations |
 | Finance | Lender-approved rates/eligibility, applications, comparisons, qualified affordability advice |
 | Valuation | Licensed transaction/comparable data and a separately validated Indian valuation model |
-| Agent marketplace | Real onboarding, verified profiles, service areas, reviews, contact routing |
+| Agent marketplace | Independent identity/registration verification, customer ratings/reviews and extended contact routing |
 | Advertising | Promoted inventory, campaign controls, billing, analytics |
-| Administration | Moderation reasons/review queues, account lifecycle controls, immutable audit log, operational metrics |
+| Administration | Listing moderation reasons/review queues, extended account lifecycle, external tamper-evident audit storage and operational metrics |
 | Operations | Managed PostgreSQL/Redis, secret store, migrations, backups with restore drills, monitoring, CI/CD, load tests, recovery procedures |
 | Discovery | SEO routes, server-rendered metadata, sitemaps, accessibility audit and automated performance budgets |
 

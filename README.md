@@ -1,12 +1,12 @@
 # RealSite Real Estate Portal · India
 
-Updated: 10 October 2026.
+Updated: 11 October 2026.
 
 RealSite is a working real estate portal for India, with a React interface based on the supplied layout references, a FastAPI API, PostgreSQL persistence, Redis search caching and rate limits, and Docker Compose.
 
 The approved portal logo reads **RealSite.in** as live Inter 900 text, with a blue gradient, light shadow and a smaller .in suffix. A blue vector map pin with a white house appears before it. The header, sign-in, footer and demo tour share the identity. See [branding and asset notes](docs/ASSETS.md).
 
-Draw a custom area on the search map with the compact pen cursor, then Apply to filter properties inside it. Remove Boundary restores the original city and retains other filters, including after a refresh. See [drawn-area search](docs/DRAW-SEARCH.md).
+Draw a custom area on the search map with the compact pen cursor, then Apply to filter properties inside it. Filtered property pins remain visible while drawing. Hover a result card to highlight its map pin with a thin cyan border and soft glow. Remove Boundary restores the original city and retains other filters, including after a refresh. See [drawn-area search](docs/DRAW-SEARCH.md).
 
 ## Open the application
 
@@ -57,17 +57,19 @@ docker compose down
 - **Map Options** button at the map's bottom right: Automatic, Satellite, Street view, and Climate Risk choices. Satellite loads Esri imagery; Street view opens the current map centre in Google Maps. Climate-risk data is currently unavailable and no risk overlays are rendered. See [map options](docs/MAP-OPTIONS.md).
 - Property galleries, facts, amenities, location, saved-home actions, and shareable property URLs.
 - Single-account registration, sign-in, sign-out, database-backed expiring sessions, and password hashing; administrator access is provisioned separately.
+- **My Profile**: name, photo, Indian mobile, city and biography; **Account Settings**: current-password-protected password changes and verified email changes. Click the header avatar.
+- **Agent Profile**: apply using the same login, administrator approval/rejection, approved public directory and owner-specific listing searches.
 - Persistent private favourites and saved searches; saved searches restore their filters.
 - Enquiries with Indian mobile numbers and optional visit dates; owners see received enquiries, buyers see sent enquiries.
 - Guided residential/commercial sale, plot sale and rental forms with photo uploads and a map location picker; listing creation, editing, and archival. Archived listings disappear from searches; enquiry history remains.
-- Admin dashboard with inventory metrics, city/status filters, paginated account and enquiry review, and listing archival/restoration.
+- Admin dashboard with inventory metrics, listing moderation, account search/edit/suspension/reactivation, agent reviews and account activity with required reasons.
 - Home loan EMI calculator with configurable price, down payment, rate, and tenure.
 - Responsive layout, keyboard navigation, modal focus handling, and reduced-motion support.
 - Azure VM infrastructure template, HTTPS Compose overlay, and deployment script.
 
 ## Demo data and remaining parity
 
-The demo seeds **100 fictional listings**, 20 in each of Hyderabad, Bengaluru, Mumbai, Pune, and New Delhi. Each city has 12 sale and 8 rental listings, all owned by `demouser`. This same account starts with five favourites, saved searches and enquiries. Prices and locations are illustrative. Photographs are from Unsplash and do not depict the listed addresses. Sample agents are fictional. Enquiries reach the property owner's inbox without sending external messages. A JSON snapshot is available in [data/demo-properties.json](data/demo-properties.json).
+The demo seeds **100 fictional listings**, 20 in each of Hyderabad, Bengaluru, Mumbai, Pune, and New Delhi. Each city has 12 sale and 8 rental listings, all owned by `demouser`. This same account starts with five favourites, saved searches and enquiries. Prices and locations are illustrative. Photographs are from Unsplash and do not depict the listed addresses. Listing agent labels are fictional; Find an agent now shows only approved account profiles. Enquiries reach the property owner's inbox without sending external messages. A JSON snapshot is available in [data/demo-properties.json](data/demo-properties.json).
 
 RealSite is a functional first version. The reference layouts and core search workflows are implemented; valuations, live listing feeds, verified agent onboarding, lender services, rental applications/payments, notification delivery, advanced moderation, and production operations remain separate work. See [feature scope](docs/SCOPE.md) for the exact boundary.
 
@@ -92,6 +94,7 @@ Browser checks create a test account, a sample enquiry, a saved search, and an a
 
 ## Technical documents
 
+- [Profiles, agents, administration and email configuration](docs/USER-MANAGEMENT.md)
 - [Project handoff and operations](docs/HANDOFF.md)
 - [Testing and release checks](docs/TESTING.md)
 - [Drawn-area search and compact pen cursor](docs/DRAW-SEARCH.md)

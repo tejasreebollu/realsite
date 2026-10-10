@@ -1,6 +1,6 @@
 # Assets and visual references
 
-Updated: 10 October 2026.
+Updated: 11 October 2026.
 
 The five screenshots supplied on 8 October 2026 are layout references for the homepage and sale/rental split map/list views. RealSite uses its own portal identity with these layouts.
 
@@ -40,3 +40,9 @@ The Satellite option loads Esri World Imagery from `https://services.arcgisonlin
 `frontend/public/cursors/pen.svg` is an original compact 24x24 vector cursor with a 1.25px outline. The drawing hotspot is its nib at (3,21); CSS uses a versioned asset URL so the compact revision replaces cached cursor imagery. Move map and corner editing use the native hand cursor. No cursor image service is required.
 
 `frontend/public/tours/demo-3d.html` is an original interactive canvas sample with rotate, look-inside and reset controls, plus keyboard navigation. It is labelled synthetic and is not a scan or measured tour of any listed address. It reuses the illustrative interior photo above. Owner-supplied HTTPS tour links are separate content.
+
+## Map highlights and profile photos
+
+Property price pins are rendered as Leaflet div icons. `frontend/src/styles.css` keeps the existing 1px border and changes it to cyan (`#22d3ee`) with a soft layered glow on the hovered property's pin. The effect clears on mouse leave. `map-draw.css` keeps pins visible during drawing and disables their pointer events; corner handles remain interactive.
+
+Profile photos reuse the owner-scoped JPEG/PNG/WebP upload pipeline and persistent image volume described in [listing forms](LISTING-FORMS.md). Uploaded photo URLs are publicly served assets, while account email and private profile fields are excluded from the public agent directory. See [user management](USER-MANAGEMENT.md) for profile visibility and consent.

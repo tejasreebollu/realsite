@@ -16,7 +16,19 @@ def inside(point,polygon):
         if abs(det)<=1e-10 and min(y1,y2)-1e-10<=y<=max(y1,y2)+1e-10 and min(x1,x2)-1e-10<=x<=max(x1,x2)+1e-10:return True
         if (y1>y)!=(y2>y) and x<x1+(y-y1)*(x2-x1)/(y2-y1):odd=not odd
     return odd
+def marker_snapshot(pg):
+    markers=pg.locator('.map-pane .price-marker')
+    assert markers.count()>0, 'The filtered search needs property markers'
+    state=markers.evaluate_all("els=>els.map(el=>({text:el.textContent,visibility:getComputedStyle(el).visibility,display:getComputedStyle(el).display,opacity:getComputedStyle(el).opacity,pointer:getComputedStyle(el).pointerEvents}))")
+    assert all(m['visibility']=='visible' and m['display']!='none' and float(m['opacity'])>0 for m in state),state
+    return [m['text'] for m in state]
+
+def drawing_markers(pg,expected):
+    assert marker_snapshot(pg)==expected, 'Drawing must retain current filtered property markers'
+    assert pg.locator('.map-pane .price-marker').evaluate_all("els=>els.every(el=>getComputedStyle(el).pointerEvents==='none')")
+
 def stroke(pg,touch=False):
+    markers=marker_snapshot(pg)
     box=pg.locator('.map-pane .leaflet-container').bounding_box()
     path=[(box['x']+box['width']*(.5+.23*math.cos(i*math.tau/48)),box['y']+box['height']*(.6+.22*math.sin(i*math.tau/48))) for i in range(49)]
     session=pg.context.new_cdp_session(pg) if touch else None
@@ -26,6 +38,7 @@ def stroke(pg,touch=False):
         if touch:session.send('Input.dispatchTouchEvent',{'type':'touchMove','touchPoints':[{'x':point[0],'y':point[1]}]})
         else:pg.mouse.move(*point,steps=2)
         if index==15:
+            drawing_markers(pg,markers)
             assert pg.locator('.draw-vertex').count()==0, 'A live stroke must not create a marker for each sample'
             expect(pg.locator('.map-pane .leaflet-overlay-pane path')).to_have_count(1)
     if touch:session.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]});session.detach()
@@ -34,10 +47,35 @@ def stroke(pg,touch=False):
     expect(bar.get_by_role('button',name='Apply',exact=True)).to_be_enabled()
     expect(pg.locator('.map-draw-hint')).to_contain_text('Area ready')
     assert 3<=pg.locator('.draw-vertex').count()<=64
+    drawing_markers(pg,markers)
 
 with sync_playwright() as p:
     browser=p.chromium.launch(executable_path=r'C:\Program Files\Google\Chrome\Application\chrome.exe',headless=True)
     context=browser.new_context(viewport={'width':1440,'height':900});page=context.new_page();page.on('pageerror',lambda e:errors.append(str(e)))
+    for purpose in ['sale','rent']:
+        query=urlencode({'q':'Hyderabad','purpose':purpose,'beds':3,'baths':2,'max_price':20000000 if purpose=='sale' else 100000})
+        page.goto(BASE+'/homes?'+query,wait_until='networkidle')
+        original_url=page.url;markers=marker_snapshot(page)
+        page.get_by_role('button',name='Draw',exact=True).click()
+        drawing_markers(page,markers);assert page.url==original_url
+        canvas=page.locator('.map-pane .leaflet-container').bounding_box()
+        for marker in page.locator('.map-pane .price-marker').all():
+            box=marker.bounding_box()
+            if box and canvas['x']+10<box['x']+box['width']/2<canvas['x']+canvas['width']-10 and canvas['y']+130<box['y']+box['height']/2<canvas['y']+canvas['height']-65:
+                page.mouse.click(box['x']+box['width']/2,box['y']+box['height']/2)
+                expect(page.locator('.leaflet-popup')).to_have_count(0)
+                expect(page.locator('.map-draw-hint')).to_contain_text('Press and hold')
+                break
+        toolbar=page.get_by_role('region',name='Draw search area')
+        toolbar.get_by_role('button',name='Move map',exact=True).click();drawing_markers(page,markers)
+        toolbar.get_by_role('button',name='Pen',exact=True).click();stroke(page)
+        drawing_markers(page,markers);assert page.url==original_url
+        page.screenshot(path=str(ARTIFACTS/f'draw-visible-markers-{purpose}.png'))
+        toolbar.get_by_role('button',name='Redraw area',exact=True).click();drawing_markers(page,markers)
+        toolbar.get_by_role('button',name='Cancel',exact=True).click()
+        assert marker_snapshot(page)==markers and page.url==original_url
+        assert page.locator('.map-pane .price-marker').evaluate_all("els=>els.every(el=>getComputedStyle(el).pointerEvents!=='none')")
+        record(f'Filtered {purpose} markers remain visible in Pen, Move map, stroke, preview and Redraw; cancel restores interaction')
     all_sale=page.request.get(BASE+'/api/properties?page_size=100').json()['items']
     page.goto(BASE+'/homes?q=Hyderabad',wait_until='networkidle');page.get_by_role('button',name='Draw',exact=True).click()
     bar=page.get_by_role('region',name='Draw search area');expect(bar.get_by_role('button',name='Pen',exact=True)).to_have_attribute('aria-pressed','true')

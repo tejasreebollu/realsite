@@ -1,6 +1,6 @@
 # Listing properties, open plots and rentals
 
-Updated: 9 October 2026.
+Updated: 11 October 2026.
 
 Open **Sell** or **Manage listings → Add a listing**. One regular account can buy, rent and publish listings.
 
@@ -43,3 +43,9 @@ These values power the [More Filters panel](MORE-FILTERS.md) and appear in prope
 ## Search and handoff
 
 Listings created through these forms participate in price, room, India More Filters, viewport and [drawn-area search](DRAW-SEARCH.md). Drawing filters the saved map location; it does not change a listing location. Plot and commercial searches hide room-count controls. A supplied 3D tour URL links to content; the built-in sample model is illustrative. See [testing](TESTING.md) for form checks and [handoff](HANDOFF.md) for backing up uploaded images alongside the database.
+
+## Account profiles and reviewed agents
+
+A user and an approved agent use the same listing permissions: both manage only their own properties. Agent approval publishes professional details; it does not independently verify listings or grant administrator permissions. Profile photos and account details are edited through the header avatar, separately from listing photos and property facts. See [user management](USER-MANAGEMENT.md).
+
+In search, hovering a listing card gives its matching map pin a thin cyan glow. Pins stay visible while drawing a boundary, and Apply filters by the saved property coordinates. Suspension revokes the owner's access but preserves listing records; an administrator archives any listings that should also disappear.

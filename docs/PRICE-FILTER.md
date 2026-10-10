@@ -1,6 +1,6 @@
 # Price filters
 
-Updated: 9 October 2026.
+Updated: 11 October 2026.
 
 The reference screenshots guide the blue/white tabbed layout. RealSite uses Indian rupees and its existing home-loan calculator.
 
@@ -34,3 +34,7 @@ Backend tests cover aggregate bins, filter context, empty/archive behaviour, EMI
 ## Combining with a drawn area
 
 Price and financing criteria continue to apply inside a drawn polygon. Removing the boundary restores the original city while retaining the selected price mode and budget. Editing, redrawing and refreshing preserve those choices. See [drawing](DRAW-SEARCH.md) and [release verification](VERIFICATION.md).
+
+## Agent and map context
+
+Directory listing searches use `agent_id`, a stable owner identifier, alongside existing price and area criteria. A hovered result card highlights its price pin with a thin cyan glow. Filtered pins remain visible while drawing; Apply commits the boundary and recalculates results and distribution using the selected budget. Active accounts can save these combined searches. See [user management](USER-MANAGEMENT.md).

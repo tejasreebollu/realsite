@@ -1,6 +1,6 @@
 # India More Filters
 
-Updated: 9 October 2026.
+Updated: 11 October 2026.
 
 The supplied images guide a scrollable blue/white dropdown with a grey heading and fixed Reset all filters / Apply actions. Controls filter stored attributes; the panel is not a collection of decorative options.
 
@@ -54,3 +54,9 @@ python scripts/verify_price_filter.py
 ## Combining with a drawn area
 
 Advanced requirements continue to filter listings inside the selected polygon. Remove Boundary restores the city searched before drawing and leaves these requirements selected. The nearby-distance pin and a drawn polygon can both apply; nearby distance remains straight-line distance. The price histogram uses the same advanced and area predicates, excluding only active price limits. See [drawing](DRAW-SEARCH.md) and [handoff](HANDOFF.md).
+
+## Agent profiles and visible map pins
+
+The listing-source value (Owner / Broker / Builder) describes the listing and is separate from approved agent account status. The public agent directory contains only approved active profiles; its View listings action uses a stable owner ID, which combines with all other search criteria. See [user management](USER-MANAGEMENT.md).
+
+Current filtered pins stay visible while drafting a boundary. Hovering a result card adds a thin cyan border and soft glow to its pin; the draft does not change matching inventory until Apply.

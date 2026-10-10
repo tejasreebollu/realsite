@@ -74,7 +74,7 @@ def current_user(request: Request, db: Session = Depends(database)):
     if not session or session.expires_at.replace(tzinfo=timezone.utc) <= datetime.now(timezone.utc):
         raise HTTPException(401, "Please sign in to continue")
     user = db.get(User, session.user_id)
-    if not user:
+    if not user or not user.active:
         raise HTTPException(401, "Session is no longer valid")
     if user.demo and os.getenv("DEMO_ACCOUNTS_ENABLED", "false").lower() != "true":
         raise HTTPException(401, "Demo accounts are disabled in this environment")
@@ -82,7 +82,7 @@ def current_user(request: Request, db: Session = Depends(database)):
 
 
 def user_dict(user):
-    return {"id": user.id, "name": user.name, "email": user.email, "role": user.role, "demo": user.demo}
+    return {"id": user.id, "name": user.name, "email": user.email, "role": user.role, "demo": user.demo, "active": user.active, "phone": user.phone, "city": user.city, "bio": user.bio, "avatar_url": user.avatar_url}
 
 
 def admin_user(user: User = Depends(current_user)):
@@ -163,6 +163,8 @@ def login(body: LoginBody, request: Request, response: Response, db: Session = D
         raise HTTPException(401, "Email or password is incorrect")
     if user.demo and os.getenv("DEMO_ACCOUNTS_ENABLED", "false").lower() != "true":
         raise HTTPException(403, "Demo accounts are disabled in this environment")
+    if not user.active:
+        raise HTTPException(403, "Your account is suspended. Contact portal support.")
     login_session(db, user, response)
     return user_dict(user)
 
@@ -198,6 +200,7 @@ class SearchFilters(AdvancedFilters):
     boundary_q: str = Field(default="", max_length=150)
     q: str = Field(default="", max_length=150)
     agent: str = Field(default="", max_length=120)
+    agent_id: int | None = Field(default=None, ge=1)
     purpose: Literal["sale", "rent"] = "sale"
     min_price: int = Field(default=0, ge=0, le=2_000_000_000)
     max_price: int | None = Field(default=None, ge=0, le=2_000_000_000)
@@ -252,6 +255,8 @@ def property_search_query(filters, north=None, south=None, east=None, west=None,
             query = query.where(comparison)
     if filters.kind:
         query = query.where(Property.kind == filters.kind)
+    if filters.agent_id:
+        query = query.where(Property.owner_id == filters.agent_id)
     if filters.agent:
         query = query.where(Property.agent == filters.agent)
     if filters.amenity:
@@ -579,12 +584,6 @@ def moderate_property(property_id: int, body: ModerationBody, user: User = Depen
     return property_dict(item)
 
 
-@app.get("/api/admin/users")
-def admin_users(page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100), user: User = Depends(admin_user), db: Session = Depends(database)):
-    rows = db.scalars(select(User).order_by(User.id).offset((page - 1) * page_size).limit(page_size)).all()
-    return {"items": [user_dict(u) | {"created_at": u.created_at.isoformat()} for u in rows], "total": db.scalar(select(func.count()).select_from(User))}
-
-
 @app.get("/api/admin/inquiries")
 def admin_inquiries(page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100), user: User = Depends(admin_user), db: Session = Depends(database)):
     rows = db.execute(select(Inquiry, Property, User).join(Property, Property.id == Inquiry.property_id).join(User, User.id == Inquiry.user_id).order_by(Inquiry.id.desc()).offset((page - 1) * page_size).limit(page_size)).all()
@@ -593,3 +592,6 @@ def admin_inquiries(page: int = Query(1, ge=1), page_size: int = Query(20, ge=1,
 # Photo storage is kept in a persistent Docker volume and shares session rules.
 from .uploads import create_upload_router, validate_uploaded_images
 app.include_router(create_upload_router(current_user, database, rate_limit))
+
+from .accounts import create_account_router
+app.include_router(create_account_router(current_user, admin_user, database, rate_limit, user_dict, invalidate))

@@ -5,6 +5,7 @@ services:
     environment:
       COOKIE_SECURE: 'true'
       DEMO_ACCOUNTS_ENABLED: 'false'
+      ACCOUNT_EMAIL_MODE: smtp
   caddy:
     image: caddy:2-alpine
     environment:

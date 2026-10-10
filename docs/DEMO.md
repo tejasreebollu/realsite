@@ -1,13 +1,13 @@
 # Client demo
 
-Updated: 10 October 2026.
+Updated: 11 October 2026.
 
 Open **http://localhost:8090** and use **Sign in**. The public demo uses one account for buying, renting and selling.
 
 | Account | Email | Password | What to demonstrate |
 | --- | --- | --- | --- |
 | demouser | `demouser@demo.example.com` | `DemoUser@2026` | Search, filters, maps, saved homes/searches, enquiries, 100 owned listings, publication, editing and archival |
-| Administrator | `admin@demo.example.com` | `AdminDemo@2026` | Inventory metrics, filters, paginated listings/accounts/enquiries, archive and restore |
+| Administrator | `admin@demo.example.com` | `AdminDemo@2026` | Inventory metrics, filters, paginated listings/enquiries, account edit/suspend/reactivate, agent reviews, account activity, archive and restore |
 
 The generic account displays **demouser** with role **User**. The old buyer and seller demo emails no longer sign in. Public registration creates a user account without asking for buyer/seller account type. All users can save homes, contact owners and manage their own properties. Administration remains restricted to provisioned administrators.
 
@@ -26,19 +26,25 @@ The approved identity is **RealSite.in**, with a blue house/map-pin emblem, bold
 | New Delhi | Delhi | 12 | 8 | 20 |
 | **All supported cities** | | **60** | **40** | **100** |
 
-Homes include apartments, villas and independent houses with 2–5 bedrooms, Indian addresses, INR sale/monthly rental prices, map coordinates, galleries, amenities and fictional agent profiles. Addresses, PIN codes, map locations and prices are illustrative; they are not verified property information. Photos are illustrative Unsplash assets and do not depict the listed Indian addresses. The mock enquiry phone is a placeholder. No email, SMS or external agent messages are sent.
+Homes include apartments, villas and independent houses with 2–5 bedrooms, Indian addresses, INR sale/monthly rental prices, map coordinates, galleries, amenities and fictional agent labels on sample listings. Addresses, PIN codes, map locations and prices are illustrative; they are not verified property information. Photos are illustrative Unsplash assets and do not depict the listed Indian addresses. The mock enquiry phone is a placeholder. No enquiry email, SMS or external agent messages are sent. Email-change verification uses an explicitly labelled local demo code unless SMTP is configured.
 
 The generic account starts with one favourite, saved search and synthetic enquiry per city. During the upgrade, the old buyer's saved activity and sent enquiries are transferred to the renamed seller account. Those historical enquiries now appear as sent from the same account that owns the demo homes. Messages from other accounts appear as received enquiries. Changes during a presentation persist.
 
 ## Suggested walkthrough
 
-1. Search Hyderabad; demonstrate sale/rental filters, exact bedroom/bathroom matching, INR price or estimated-payment filters, India More Filters, galleries and Map Options. Draw an area with the pen, release, Apply, refresh and Remove Boundary to show that Hyderabad returns.
+1. Search Hyderabad; hover a property card to show its matching pin's thin cyan glow, then demonstrate sale/rental filters, exact bedroom/bathroom matching, INR price or estimated-payment filters, India More Filters, galleries and Map Options. Draw an area with the pen, release, Apply, refresh and Remove Boundary to show that Hyderabad returns.
 2. Sign in as **demouser**. Show Favourites, Updates and Inbox.
 3. With the same login, open **Manage listings**, edit a property, or choose **Sell a property**, **Sell an open plot**, or **Rent a property**. Follow Details, Location, Photos and Review; select a map location and upload your photos. New properties are additional inventory, separate from the 100 synthetic homes.
 4. To demonstrate incoming enquiries, submit one from another registered user, then return to demouser's Inbox.
 5. Sign out and sign in as admin. Show metrics and city filters. Archive a listing, verify it disappears from search, then restore it before the next demo.
 
 Satellite needs internet access. Street view opens Google Maps. Climate-risk data remains unavailable.
+
+## Profile and agent walkthrough
+
+Click the header avatar to edit a photo, name, mobile, city and biography. Demouser and admin credentials stay fixed. Register a separate account to demonstrate Account Settings: change password, request a new email, use the labelled local demo code and Verify email. No mail is sent in demo mode.
+
+From the same account, complete Agent Profile and Submit for review. Sign in as admin, open Agent reviews and approve with a reason. Find an agent then shows the approved profile and its owned listings. Professional edits return to review. Show Accounts search/edit/suspend/reactivate and Account activity; reactivate after demonstrating suspension. The directory no longer contains fictional placeholder cards. See [user management](USER-MANAGEMENT.md).
 
 ## Data and repeatability
 
@@ -93,6 +99,6 @@ The existing 100 synthetic homes receive varied new feature metadata once. Exist
 
 ## Draw your own search area
 
-Open Buy, Rentals or Open plots and choose **Draw** on the map (switch to Map on phones). Press and hold, draw around a neighbourhood with the mouse or your finger, then release and choose Apply. Pen is selected by default. The compact pen cursor indicates drawing; the hand indicates Move map or adjusting the finished preview. Use Redraw to try again, or drag the white corner handles to adjust the boundary. Results and map prices show only matching listings within that boundary. Keep refining the price or property criteria, save the area, or choose Remove Boundary. Applying an area temporarily replaces the text city search; Remove Boundary restores the original location, including after a refresh. Price, room and other filters stay selected. See [drawing instructions](DRAW-SEARCH.md).
+Open Buy, Rentals or Open plots and choose **Draw** on the map (switch to Map on phones). Press and hold, draw around a neighbourhood with the mouse or your finger, then release and choose Apply. Pen is selected by default. Filtered properties stay visible in Pen, Move map and preview; pin clicks are disabled during drawing so they do not interrupt the stroke. The compact pen cursor indicates drawing; the hand indicates Move map or adjusting the finished preview. Use Redraw to try again, or drag the white corner handles to adjust the boundary. Results and map prices show only matching listings within that boundary. Keep refining the price or property criteria, save the area, or choose Remove Boundary. Applying an area temporarily replaces the text city search; Remove Boundary restores the original location, including after a refresh. Price, room and other filters stay selected. See [drawing instructions](DRAW-SEARCH.md).
 
 For the current release checks, setup and maintenance instructions, see [testing](TESTING.md), [verification](VERIFICATION.md) and [project handoff](HANDOFF.md). The live database may contain additional presentation/test accounts and listings; the fixed 100-listing count describes the synthetic seed, not all current records.
