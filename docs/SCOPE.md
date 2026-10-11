@@ -8,7 +8,7 @@ RealSite is a real estate portal for **India** using React, FastAPI, PostgreSQL,
 
 | Experience | Current implementation |
 | --- | --- |
-| Homepage | Header, left rail, photographic hero, search, card carousels, service cards, city links |
+| Homepage | Header, left rail, photographic hero with **Find your space. Build your future.**, search, card carousels, service cards, city links |
 | Buy/rent results | Split map/list, sale/rental variants, INR price cards, photo paging, favourites |
 | Search | City/address/PIN search, suggestions, filters including plus-count room choices and exact-match checkboxes, India More Filters, multi-amenity/area/status/source/tour criteria, sorting, pagination, viewport, drawn-polygon and nearby-distance filtering; visible pins while drafting and thin cyan linked-marker hover |
 | Map Options | Automatic map, satellite imagery, external Street View access; climate-risk selectors with an explicit unavailable-data status |
@@ -16,8 +16,8 @@ RealSite is a real estate portal for **India** using React, FastAPI, PostgreSQL,
 | Accounts | Single public-account registration, login, logout, expiring private sessions, profile/photo edits, password changes, email-change verification, provisioned admin role |
 | Personal workspace | Favourites, saved searches, recent views, enquiry inbox |
 | Sellers/owners | Separate property sale, plot sale and rental forms, optional India search attributes, map picker, photo uploads, edit/archive and enquiries |
-| Administration | Inventory metrics, city/status filters, paginated listings/accounts/enquiries, archive/restore, account edits/suspension, agent reviews and account activity; admin-only API and UI |
-| Client demo | 100 synthetic properties across five cities, generic user and admin logins, saved homes/searches/enquiries and JSON snapshot |
+| Administration | Compact four-KPI/nine-chart dashboard, full-width third-row grouped activity bars, light card hover feedback, sticky management tabs, 30/90/365-day period/dataset controls, city performance, INR medians, planning signals, aggregate CSV; city/status inventory filters, paginated listings/accounts/enquiries, archive/restore, account edits/suspension, agent reviews and account activity; admin-only API and UI |
+| Client demo | 100 synthetic properties across five cities with direct-INR city/locality/area/type pricing assumptions, generic user and admin logins, saved homes/searches/enquiries and JSON snapshot |
 | Finance | Adjustable home loan EMI calculator, INR price histogram/slider and estimated monthly-payment filtering with demo financing assumptions |
 | Agents | Single-account applications, admin approval/rejection, approved directory, service cities, optional public phone and owner-ID listing searches |
 | Platform | Four-service Docker stack, readiness, Redis caching/rate limits, Azure evaluation deployment |
@@ -25,6 +25,8 @@ RealSite is a real estate portal for **India** using React, FastAPI, PostgreSQL,
 The approved identity uses live **RealSite.in** text in Inter 900, a smaller .in suffix and a blue SVG map pin containing a white house. It is shared across the header, sign-in, footer and synthetic tour, with responsive sizing and a light shadow.
 
 The implementation retains the reference's blue/white palette and key desktop layouts. Indian addresses, INR amounts, RealSite branding, illustrative photography, and OpenStreetMap replace the US content and proprietary reference integrations. Full feature parity with the reference platform remains separate work.
+
+The current dashboard groups activity daily, in seven-day totals or in thirty-day totals. It does not offer a 120-day window or fabricated history. [Analytics](ADMIN-ANALYTICS.md) and [demo pricing](DEMO.md#indian-demo-pricing) describe scope and assumptions.
 
 ## Work required for a full product
 
@@ -41,10 +43,14 @@ The implementation retains the reference's blue/white palette and key desktop la
 | Valuation | Licensed transaction/comparable data and a separately validated Indian valuation model |
 | Agent marketplace | Independent identity/registration verification, customer ratings/reviews and extended contact routing |
 | Advertising | Promoted inventory, campaign controls, billing, analytics |
-| Administration | Listing moderation reasons/review queues, extended account lifecycle, external tamper-evident audit storage and operational metrics |
+| Administration | Listing moderation reasons/review queues, extended account lifecycle, external tamper-evident audit storage, infrastructure telemetry and transaction/campaign analytics |
 | Operations | Managed PostgreSQL/Redis, secret store, migrations, backups with restore drills, monitoring, CI/CD, load tests, recovery procedures |
 | Discovery | SEO routes, server-rendered metadata, sitemaps, accessibility audit and automated performance budgets |
 
 The next release should prioritise real inventory, verified owner onboarding, managed photo storage and moderation. Actual inventory providers and account verification methods must be selected before those integrations can be completed. Proprietary third-party algorithms and data are not included.
 
 Drawn-area search supports one simple map polygon, pen-first mouse/touch drawing, draggable corner refinement, keyboard input, preview and Apply/Cancel, Edit area, Redraw and boundary removal. A compact 24px pen cursor marks the nib while drawing; a hand indicates map movement or corner editing. Small closing overlaps are trimmed conservatively. Server counts, pagination, map results and price histograms share the area predicate. URLs and saved searches preserve the boundary and original city; removal restores that city with other filters intact. Concave shapes and boundary points are supported; multiple regions and polygon holes are not currently supported.
+
+Admin reports describe stored portal activity, with synthetic inventory labelled separately. They do not establish external market forecasts, revenue, completed transactions or unique-buyer conversion. See [analytics scope and definitions](ADMIN-ANALYTICS.md).
+
+The listing/enquiry activity chart uses grouped bars. Synthetic Indian prices follow city/locality/area/type assumptions; owner pricing is preserved. This provides internally consistent presentation data, not a verified valuation service. See [demo pricing](DEMO.md#indian-demo-pricing).

@@ -2,6 +2,14 @@
 
 Updated: 11 October 2026.
 
+## Deploying the analytics and pricing release
+
+Rebuild and deploy both API and web for this release while retaining PostgreSQL, Redis and uploaded-image volumes. The analytics endpoint reads existing records; analytics and demo pricing add no schema migration or service dependency. The existing account/profile compatibility upgrades remain applicable to older installations.
+
+Fresh installations seed the revised direct-INR demo assumptions. Startup does not overwrite prices already stored in an existing database. For an older evaluation inventory, back up first and review the explicit repricing preview described in [handoff](HANDOFF.md#indian-demo-price-update--11-october-2026); the apply command only updates qualifying unchanged synthetic rows. Do not treat these assumptions as market valuations. [Demo pricing](DEMO.md#indian-demo-pricing) documents the model.
+
+The accepted homepage and compact admin dashboard are verified locally. Azure templates are syntax-checked; cloud deployment, SMTP delivery and runtime operation remain unverified.
+
 The included Azure path hosts the same Docker stack on one Ubuntu VM with Caddy providing domain-based HTTPS. It is an evaluation topology. No Azure resources have been created by this work.
 
 ## Included files

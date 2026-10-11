@@ -2,6 +2,12 @@
 
 Updated: 11 October 2026.
 
+## Demo prices and listing updates
+
+The revised [Indian demo assumptions](DEMO.md#indian-demo-pricing) update asking prices for qualifying seed homes. Where a synthetic previous price already exists, repricing preserves a demo reduction by setting it 5% above the revised asking price. It does not add unknown amenities, approvals or other optional facts.
+
+Owner prices and their normal editing workflow remain separate from synthetic repricing. Price-reduction filtering continues to compare stored previous/current amounts; source, status, area, furnishing and other India criteria retain their existing semantics. Admin charts read the same stored inventory; see [analytics](ADMIN-ANALYTICS.md).
+
 The supplied images guide a scrollable blue/white dropdown with a grey heading and fixed Reset all filters / Apply actions. Controls filter stored attributes; the panel is not a collection of decorative options.
 
 | Reference control | RealSite India implementation |

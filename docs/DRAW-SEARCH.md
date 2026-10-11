@@ -2,6 +2,12 @@
 
 Updated: 11 October 2026.
 
+## Revised demo prices and area searches
+
+The 100 synthetic homes now use the [Indian demo price assumptions](DEMO.md#indian-demo-pricing). Repricing changes eligible stored price fields and invalidates listing caches; it does not move properties, alter polygons or change saved original-city context. Cards and map price markers read the same stored amounts, including when a drawn area is applied or removed.
+
+Drawing still respects the selected city and other filters. Admin activity charts report actual listing/enquiry events rather than geographical price forecasts; see [analytics](ADMIN-ANALYTICS.md).
+
 Open a property search and choose **Draw** on the map. On phones, switch to **Map** first. Pen is selected automatically. Properties matching your current filters remain visible throughout drawing, moving the map and adjusting the preview. Property pins do not open popups while drawing, so you can trace across them. Results change only when you choose Apply.
 
 1. Press and hold the mouse button, or touch the map with your finger.

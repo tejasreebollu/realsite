@@ -8,6 +8,12 @@ The approved portal logo reads **RealSite.in** as live Inter 900 text, with a bl
 
 Draw a custom area on the search map with the compact pen cursor, then Apply to filter properties inside it. Filtered property pins remain visible while drawing. Hover a result card to highlight its map pin with a thin cyan border and soft glow. Remove Boundary restores the original city and retains other filters, including after a refresh. See [drawn-area search](docs/DRAW-SEARCH.md).
 
+The 100 synthetic homes use Indian sale/rental assumptions based on city, locality, area and type. Admin Analytics includes grouped listing/enquiry bars. See [demo pricing](docs/DEMO.md#indian-demo-pricing) for ranges and limitations.
+
+The homepage headline is **Find your space. Build your future.** Admin opens a compact Analytics view with four KPIs and nine charts. The full-width grouped activity bars sit on the third chart row, with 30/90/365-day reporting, dataset controls and city CSV export. Management tabs stay visible; cards have light shadows and a thin hover border, with a small KPI lift. See [admin analytics](docs/ADMIN-ANALYTICS.md).
+
+For a read-only local presentation check, run `python scripts/verify_admin_analytics.py` after installing the browser tooling described in [testing](docs/TESTING.md). It covers the accepted headline, responsive layouts, reporting and management navigation. See [handoff](docs/HANDOFF.md) for safe upgrades and explicit demo repricing.
+
 ## Open the application
 
 - **Portal:** http://localhost:8090
@@ -62,7 +68,7 @@ docker compose down
 - Persistent private favourites and saved searches; saved searches restore their filters.
 - Enquiries with Indian mobile numbers and optional visit dates; owners see received enquiries, buyers see sent enquiries.
 - Guided residential/commercial sale, plot sale and rental forms with photo uploads and a map location picker; listing creation, editing, and archival. Archived listings disappear from searches; enquiry history remains.
-- Admin dashboard with inventory metrics, listing moderation, account search/edit/suspension/reactivation, agent reviews and account activity with required reasons.
+- **Admin Analytics**: nine charts for listing/enquiry activity, city supply and demand, inventory mix/types, INR pricing, account composition/growth, agent reviews and inventory age. Date/dataset controls, planning signals and aggregate CSV export help guide decisions. Existing listing/account moderation remains available. See [analytics guide](docs/ADMIN-ANALYTICS.md).
 - Home loan EMI calculator with configurable price, down payment, rate, and tenure.
 - Responsive layout, keyboard navigation, modal focus handling, and reduced-motion support.
 - Azure VM infrastructure template, HTTPS Compose overlay, and deployment script.
@@ -94,6 +100,7 @@ Browser checks create a test account, a sample enquiry, a saved search, and an a
 
 ## Technical documents
 
+- [Admin analytics, charts and planning](docs/ADMIN-ANALYTICS.md)
 - [Profiles, agents, administration and email configuration](docs/USER-MANAGEMENT.md)
 - [Project handoff and operations](docs/HANDOFF.md)
 - [Testing and release checks](docs/TESTING.md)

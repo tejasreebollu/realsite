@@ -2,6 +2,12 @@
 
 Updated: 11 October 2026.
 
+## Current presentation and analytics flow
+
+`main.jsx` renders the approved **Find your space. Build your future.** homepage headline as live text. `admin.jsx` opens Analytics by default and keeps management navigation above each section. Native SVG charts and `ResizeObserver` in `analytics.jsx` size the full-width third-row activity plot without stretching labels; `analytics.css` supplies compact spacing, light shadows and reduced-motion-aware KPI hover feedback.
+
+The admin-only analytics router reads PostgreSQL aggregates and returns private, no-store responses. Browser verification creates an authentication session but writes no business records. Reporting windows are 30/90/365 India calendar days with daily/7-day/30-day event totals; account/agent charts retain whole-portal scope. See [metric definitions](ADMIN-ANALYTICS.md). `demo_pricing.py` provides deterministic direct-INR seed assumptions and guarded explicit repricing, as described in [handoff](HANDOFF.md#indian-demo-price-update--11-october-2026).
+
 ```mermaid
 flowchart LR
     Browser[React in browser] --> Web[nginx :8080]
@@ -91,6 +97,7 @@ Redis also enforces ten-minute counters for authentication, publication, and enq
 | GET | `/api/admin/agents`, `/api/admin/account-audit` | Administrator, paginated |
 | PATCH | `/api/admin/users/{id}`, `/api/admin/agents/{id}` | Administrator, reason required |
 | GET | `/api/admin/summary` | Administrator |
+| GET | `/api/admin/analytics` | Administrator; period/dataset aggregates, private no-store |
 | GET | `/api/admin/properties`, `/api/admin/users`, `/api/admin/inquiries` | Administrator, paginated |
 | PATCH | `/api/admin/properties/{id}` | Administrator, archive/restore any listing |
 
@@ -117,3 +124,13 @@ The pen cursor is a local 24x24 SVG at `frontend/public/cursors/pen.svg`, with a
 ## Marker visibility and hover
 
 Search result cards supply their property ID to `PropertyMap.hovered`. Leaflet raises the matching marker and applies its hovered class. `styles.css` renders a 1px cyan border (`#22d3ee`) with a soft glow; mouse leave clears the class. During drawing, `map-draw.css` disables property-marker pointer events while retaining visibility. Preview geometry and draggable boundary handles remain separate layers. Drafting does not change the server search; Apply commits the polygon.
+
+## Administrator analytics
+
+`app/analytics.py` reads scoped inventory metadata, current favourites and two equal-length enquiry windows. India calendar dates are converted to UTC query boundaries. Current stock, archived records and period flows remain distinct; prices use separate sale/rent medians and price bands. The API returns aggregates without private contact/message data and reuses server administrator access. Account/agent aggregates always use the whole portal, explicitly labelled in the UI. No schema migration or third-party chart package is required. React SVG/CSS charts provide focus/hover values and responsive layouts. See [analytics definitions and scaling notes](ADMIN-ANALYTICS.md).
+
+## Synthetic Indian pricing
+
+`app/demo_pricing.py` contains deterministic city/locality/area/type assumptions in INR. `seed.py` uses them only for new seed rows, preserving the original seeded coordinates and dimensions. An explicit preview/apply CLI recognises original `india-demo-v2` records, checks original core facts and amounts, and updates only price/prior price; unknown or edited records are skipped. Applying invalidates the existing Redis listing revision. No schema, currency-conversion service or market-data integration is added. Demo ranges, references and limitations are in [the demo guide](DEMO.md#indian-demo-pricing).
+
+The listing/enquiry activity SVG uses two adjacent bars per reporting bucket, with heights proportional to actual counts and the existing keyboard/hover readout. Account growth retains its line chart; time boundaries and API aggregation are unchanged.

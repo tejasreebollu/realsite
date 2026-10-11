@@ -1,6 +1,52 @@
 # Verification record · release 11 October 2026
 
-## Release overview and final cyan highlight
+## Final documentation and homepage release — 11 October 2026
+
+All **16 Markdown documents** are synchronised, including handoff, setup/Azure, architecture, scope, demo, account, listing, map and filter guides. No maintained Word editions exist. The homepage displays **Find your space. Build your future.**; the compact admin dashboard retains four KPIs, nine charts, sticky management tabs, toolbar actions, light hover feedback and the full-width third-row activity plot. The period menu remains 30/90/365 days.
+
+The final combined browser workflow passed **17 checks** (three homepage and 14 admin checks), with no JavaScript errors. It covers exact headline/search, responsive hero bounds, all chart/control/export workflows, API-proportional bars, available-width sizing, management navigation, error recovery and empty data. It creates an authentication session without inserting business records. Current local assets: `index-C3ZRAcB0.css` / `index-OwmaSPV4.js`.
+
+The **166 isolated backend cases**, four public-pricing checks and three hover checks below are implementation evidence for this release, not fresh runs for documentation-only edits. Backend source was unchanged during final release preparation. Readiness, local/Azure Compose syntax, all documentation links, the 100-property public snapshot and Git whitespace are checked before publication. Azure runtime and SMTP delivery remain unverified.
+
+Final browser reports/screenshots remain under ignored `artifacts/analytics-*` and `hero-headline-*`. The final release check report is `artifacts/release-2026-10-11-analytics.json`. Backups, credentials, uploads and local tools are excluded from Git. Earlier entries below record intermediate releases and their then-current assets/test counts.
+
+## Full-width activity row — 11 October 2026
+
+Listing & enquiry activity now occupies a full-width third chart row after the inventory/account chart rows. Its compact 180px SVG plot measures the available width; bars remain distinct and text proportions stay unchanged. All nine charts remain. The existing 30/90/365-day menu uses daily/7-day/30-day totals respectively, with a shorter final group when needed; no 120-day option was added.
+
+The frontend build/deployment and **14 analytics browser checks** passed, including full-width placement, plot resizing, proportional heights, time-bucket counts, keyboard/hover details and desktop/mobile layouts down to 320px. No JavaScript errors occurred. Assets: `index-C3ZRAcB0.css` / `index-DiqGdVjZ.js`. Backend code/data are unchanged; the earlier 166 backend cases are prior evidence. Refreshed screenshots/results are ignored under `artifacts/analytics-*`.
+
+## Grouped activity bars and Indian demo prices — 11 October 2026
+
+Converted Listing & enquiry activity to grouped blue/teal bars, retaining the reporting windows, real event counts and keyboard/hover readout. Account growth remains a line. The 100 synthetic homes now use direct INR assumptions by city, locality, floor area and property type. These are illustrative scenarios, not verified market valuations; [the demo guide](DEMO.md#indian-demo-pricing) records the formula, ranges and references.
+
+Built and deployed API/web; readiness passed. Current assets: `index-CNkMfFb6.css` / `index-C4Ef93ox.js`. **166 isolated backend cases**, **13 analytics browser checks** and **four public-pricing checks** passed. The bar check compares actual SVG heights/counts with API data; the public checks cover every city/purpose, price sorting and bounds, Hyderabad cards/map prices and synthetic city medians. Desktop/mobile layouts down to 320px remain valid. No JavaScript errors occurred; one existing backend deprecation warning remains.
+
+A PostgreSQL backup preceded the update. **98 synthetic price pairs changed; two already matched.** All **142 properties** have identical non-price fingerprints; the other 44 rows have unchanged prices. The eight other business tables are unchanged: 27 users, 40 account audit entries, three agent profiles, zero email changes, 10 saved searches, 26 uploaded images, eight favourites and nine enquiries. Authentication sessions are excluded from business-table comparisons. Manually entered/customised properties and archived surplus seed rows retain their amounts. The 100-home export has 12 sale/eight rental homes per city and matches live prices. A repeat preview finds zero changes.
+
+Evidence stays local and ignored: `artifacts/before-india-pricing.sql`, `india-pricing-before.json`, `india-pricing-after.json`, `india-pricing-preview.json`, `india-pricing-applied.json`, `india-pricing-results.json`, `india-pricing-public-results.json`, sale/rent screenshots and refreshed `analytics-*` reports/screenshots. Backups are private and excluded from Git. Earlier entries below describe historical releases and their test scope.
+
+## Dashboard card hover — 11 October 2026
+
+The frontend-only update adds light card shadows, a thin blue hover border and a 2px KPI lift. Three focused browser checks passed: hover/reset without layout shift, stationary chart cards with border/shadow feedback, and reduced-motion suppression of the lift. A 390px width check found no page overflow; no JavaScript errors occurred. Backend tests and the full analytics workflow were not rerun for this CSS refinement.
+
+The rebuilt frontend is healthy locally with `index-CNkMfFb6.css` / `index-P1oxzBnq.js`. Evidence is ignored under `artifacts/analytics-hover-results.json` and `analytics-kpi-hover.png`.
+
+## Compact admin layout — 11 October 2026
+
+The requested introductions and context banners were removed; refresh/export now share the filter toolbar. KPI height, panel padding and row gaps were reduced. Tabs now precede all section content and stay visible during scrolling, including Listings and Enquiries. All reporting controls and nine charts remain available.
+
+The frontend build passed and is deployed as `index-CquUJYQi.css` / `index-Ba2WwjKn.js`. **12 browser checks passed**, with no JavaScript errors, covering all requested layout changes, sticky navigation across management tabs, chart controls, export, failure/retry, empty data and 1280/768/390/320px layouts. Screenshots/results were refreshed under ignored `artifacts/analytics-*`. The 162 backend cases below remain prior evidence; no backend code changed or backend suite rerun for this layout refinement.
+
+## Admin analytics — 11 October 2026
+
+The new default admin view provides nine charts, four KPIs, 30/90/365-day controls, all/owner/synthetic listing datasets, planning signals and city CSV export. It reads existing records through an administrator-only, private no-store endpoint. No migration, new dependency or fabricated history was added. See [analytics](ADMIN-ANALYTICS.md).
+
+The full isolated backend suite passed **162 cases**, including 13 analytics cases; one existing Starlette/AnyIO deprecation warning remains. **11 analytics browser checks passed** with no JavaScript errors, including date/dataset totals, chart hover/focus, separate pricing modes, CSV export/formula escaping, management tabs, 1280/768/390/320px layouts, empty data and failure/retry. Prior account/drawing release evidence below remains historical; those browser workflows were not rerun for analytics.
+
+Initial analytics build assets: `index-DohR1kCX.css` / `index-k7frlfsm.js`. API and web are healthy; PostgreSQL/Redis and image/data volumes were retained. Endpoint scope, metric formulas and load-testing limitations are documented. Evidence: ignored `artifacts/analytics-browser-results.json`, `analytics-desktop.png`, `analytics-mobile-viewport.png` and `analytics-city-report.csv`.
+
+## Previous account and cyan highlight release
 
 Updated: 11 October 2026.
 
@@ -8,7 +54,7 @@ The release combines self-service profiles, protected account settings, reviewed
 
 Release preparation validated all 15 Markdown documents and 83 local links, the public snapshot of 100 synthetic properties, the deployed account routes, readiness, local/Azure Compose syntax and Git diff whitespace. Final checks are recorded in ignored `artifacts/release-2026-10-11.json`. The remote branch was fetched before publication; use an ordinary push and confirm the working tree and `HEAD...origin/main` after it.
 
-The final web build is deployed locally as `index-CUesXYZG.css` / `index-aQK23O7b.js`. Two focused read-only Chrome checks confirmed that hovering sale and rental result cards highlights exactly the matching marker, keeps its border at 1px, uses cyan `#22d3ee` with a soft glow, and clears the highlight on mouse leave. No JavaScript errors occurred. Evidence is local in ignored `artifacts/cyan-hover-results.json` and `cyan-hover-sale.png` / `cyan-hover-rent.png`.
+That release's web build was deployed locally as `index-CUesXYZG.css` / `index-aQK23O7b.js`. Two focused read-only Chrome checks confirmed that hovering sale and rental result cards highlights exactly the matching marker, keeps its border at 1px, uses cyan `#22d3ee` with a soft glow, and clears the highlight on mouse leave. No JavaScript errors occurred. Evidence is local in ignored `artifacts/cyan-hover-results.json` and `cyan-hover-sale.png` / `cyan-hover-rent.png`.
 
 The account and drawing evidence below was collected during this implementation. The later hover change only modifies frontend CSS; the 149 backend cases and 11 account checks were not rerun for it. Fourteen drawing checks and the two hover checks are the subsequent focused validation. PostgreSQL, Redis, existing volumes and customer data were preserved. Real SMTP delivery and Azure runtime remain unverified.
 

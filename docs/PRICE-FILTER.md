@@ -2,6 +2,12 @@
 
 Updated: 11 October 2026.
 
+## Indian synthetic price baseline
+
+The 100 demo homes now use direct INR assumptions by city, locality, floor area and property type. [Demo pricing](DEMO.md#indian-demo-pricing) records the formula and illustrative city medians. Histograms, budget filters, cards and estimated EMI calculations use these updated stored prices. Sale asking prices and monthly rents remain separate.
+
+This is demo data, not a verified market-price feed or lender quote. Financing presets remain illustrative. Existing owner-entered prices are preserved, and existing databases require an explicit preview/apply to reprice eligible unchanged seed rows; startup does not silently overwrite them.
+
 The reference screenshots guide the blue/white tabbed layout. RealSite uses Indian rupees and its existing home-loan calculator.
 
 ## List Price

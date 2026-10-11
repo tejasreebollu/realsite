@@ -2,12 +2,20 @@
 
 Updated: 11 October 2026.
 
+## Accepted homepage and compact dashboard
+
+Start with **Find your space. Build your future.** on the homepage, then search a city. The existing hero subtitle and search remain available. Demonstrate the smaller `.in` wordmark suffix and the blue map-pin/white-house emblem.
+
+Sign in as admin and open Analytics: four compact KPIs and nine charts, with reporting controls on the left and Refresh/Export city report on the right. Hover a KPI for its light shadow, thin border and small lift. The full-width **Listing & enquiry activity** chart sits on the third chart row; grouped blue/teal bars show new listings and enquiries. Account growth stays a line. Show 30 days (30 daily groups), 90 days (13 seven-day groups) and 12 months (13 thirty-day groups); final groups can be shorter. The menu does not include 120 days.
+
+Switch all/owner/synthetic datasets, switch sale/rent price distributions and export the aggregate city CSV. Management tabs remain visible for Listings and Enquiries as well as the account sections. See [analytics](ADMIN-ANALYTICS.md) for definitions and planning limits. Run `python scripts/verify_admin_analytics.py` before presenting to check the accepted homepage and admin workflows without inserting business records.
+
 Open **http://localhost:8090** and use **Sign in**. The public demo uses one account for buying, renting and selling.
 
 | Account | Email | Password | What to demonstrate |
 | --- | --- | --- | --- |
 | demouser | `demouser@demo.example.com` | `DemoUser@2026` | Search, filters, maps, saved homes/searches, enquiries, 100 owned listings, publication, editing and archival |
-| Administrator | `admin@demo.example.com` | `AdminDemo@2026` | Inventory metrics, filters, paginated listings/enquiries, account edit/suspend/reactivate, agent reviews, account activity, archive and restore |
+| Administrator | `admin@demo.example.com` | `AdminDemo@2026` | Analytics charts, reporting controls, planning signals, city CSV, filters, paginated listings/enquiries, account edit/suspend/reactivate, agent reviews, account activity, archive and restore |
 
 The generic account displays **demouser** with role **User**. The old buyer and seller demo emails no longer sign in. Public registration creates a user account without asking for buyer/seller account type. All users can save homes, contact owners and manage their own properties. Administration remains restricted to provisioned administrators.
 
@@ -36,7 +44,7 @@ The generic account starts with one favourite, saved search and synthetic enquir
 2. Sign in as **demouser**. Show Favourites, Updates and Inbox.
 3. With the same login, open **Manage listings**, edit a property, or choose **Sell a property**, **Sell an open plot**, or **Rent a property**. Follow Details, Location, Photos and Review; select a map location and upload your photos. New properties are additional inventory, separate from the 100 synthetic homes.
 4. To demonstrate incoming enquiries, submit one from another registered user, then return to demouser's Inbox.
-5. Sign out and sign in as admin. Show metrics and city filters. Archive a listing, verify it disappears from search, then restore it before the next demo.
+5. Sign out and sign in as admin. Analytics opens by default: show the nine charts, change the reporting period and listing dataset, switch Sale/Rent pricing and export the city report. Explain that synthetic listings are labelled and that account/agent charts cover the whole portal. Open Listings to show city filters. Archive a listing, verify it disappears from search, then restore it before the next demo.
 
 Satellite needs internet access. Street view opens Google Maps. Climate-risk data remains unavailable.
 
@@ -102,3 +110,23 @@ The existing 100 synthetic homes receive varied new feature metadata once. Exist
 Open Buy, Rentals or Open plots and choose **Draw** on the map (switch to Map on phones). Press and hold, draw around a neighbourhood with the mouse or your finger, then release and choose Apply. Pen is selected by default. Filtered properties stay visible in Pen, Move map and preview; pin clicks are disabled during drawing so they do not interrupt the stroke. The compact pen cursor indicates drawing; the hand indicates Move map or adjusting the finished preview. Use Redraw to try again, or drag the white corner handles to adjust the boundary. Results and map prices show only matching listings within that boundary. Keep refining the price or property criteria, save the area, or choose Remove Boundary. Applying an area temporarily replaces the text city search; Remove Boundary restores the original location, including after a refresh. Price, room and other filters stay selected. See [drawing instructions](DRAW-SEARCH.md).
 
 For the current release checks, setup and maintenance instructions, see [testing](TESTING.md), [verification](VERIFICATION.md) and [project handoff](HANDOFF.md). The live database may contain additional presentation/test accounts and listings; the fixed 100-listing count describes the synthetic seed, not all current records.
+
+See [admin analytics](ADMIN-ANALYTICS.md) for chart definitions and planning suggestions. The demo uses actual stored synthetic/test activity; no fake growth series, closed sales or revenue are inserted. Sparse periods stay sparse.
+
+## Indian demo pricing
+
+The 100 synthetic homes use deterministic Indian sale and monthly-rent assumptions in `backend/app/demo_pricing.py`. Prices depend on the city, locality, floor area and property type; larger homes and Mumbai generally cost more. This is direct INR pricing, with no USD conversion. The previous seed used broad random INR amounts unrelated to the home's area.
+
+| City | Base sale assumption ₹/sqft | Base rent assumption ₹/sqft/month | Demo median sale | Demo median monthly rent |
+| --- | ---: | ---: | ---: | ---: |
+| Hyderabad | 5,200 | 18 | ₹98.25 lakh | ₹42,750 |
+| Bengaluru | 6,200 | 20 | ₹1.07 crore | ₹40,500 |
+| Mumbai | 12,500 | 32 | ₹2.43 crore | ₹71,500 |
+| Pune | 4,800 | 16 | ₹81 lakh | ₹30,000 |
+| New Delhi | 6,200 | 19 | ₹1.14 crore | ₹38,000 |
+
+Locality multipliers range from 0.80–1.40. Apartments use a type multiplier of 1.00, houses 1.08 and villas 1.18, with reproducible variation of 0.88–1.04. Sale values round to ₹50,000 and monthly rents to ₹500. The current 60 sale homes range from ₹52.5 lakh to ₹3.69 crore; the 40 rentals range from ₹19,000 to ₹92,000/month. The seed contains 2–5 bedroom homes, so it does not represent the full market of smaller budget units or luxury properties.
+
+These numbers are chosen demonstration assumptions, not measured city averages or verified quotes for the illustrative addresses. [Magicbricks locality price trends](https://www.magicbricks.com/Property-Rates-Trends/ALL-RESIDENTIAL-rates-in-Hyderabad) and [its rental research](https://property.magicbricks.com/microsite/research-insights/rental-index/index.html) were reviewed for Indian pricing context; the formula is not a valuation model or live feed.
+
+The local update changed 98 unchanged seed prices; two already matched. It preserved all other property fields, owner-entered prices, account records, photos, favourites, saved searches and enquiries. Older surplus archived seed rows are retained with their historical amounts. Normal restarts do not reset presentation edits. The exported 100-property snapshot matches the live synthetic inventory; use the Synthetic listings dataset to show its medians separately from owner/test inventory.

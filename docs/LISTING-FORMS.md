@@ -2,6 +2,12 @@
 
 Updated: 11 October 2026.
 
+## Owner prices and administration
+
+Owners enter sale asking prices in whole rupees and rental asking prices in rupees per month. These remain owner-supplied amounts. The revised [synthetic pricing model](DEMO.md#indian-demo-pricing) is used for seeded demo homes; it is not an automatic valuation of a submitted property. Explicit repricing excludes manual listings and skips customised seed records.
+
+Published properties contribute to current admin inventory and genuine creation-event counts; enquiries contribute when created. Archiving changes current stock without implying a completed transaction. [Admin analytics](ADMIN-ANALYTICS.md) separates sale prices, monthly rents and period events. The property, plot and rental form workflows and optional India attributes remain available.
+
 Open **Sell** or **Manage listings → Add a listing**. One regular account can buy, rent and publish listings.
 
 | Form | Supported property | Specific information |

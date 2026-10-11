@@ -2,7 +2,7 @@
 
 Updated: 11 October 2026.
 
-RealSite is an India real estate portal built with React, FastAPI, PostgreSQL, Redis and local Docker, with Azure evaluation templates. This release includes the latest room/price/India filters, optional listing metadata, pen drawing, closing-overlap repair, original-city restoration, compact pen cursor, the approved live-text RealSite.in identity, editable profiles/account settings, reviewed agent profiles, audited admin account controls, visible pins during drawing and a thin cyan marker hover highlight. The reference screenshots guide the layout; this is a functional demo with synthetic inventory.
+RealSite is an India real estate portal built with React, FastAPI, PostgreSQL, Redis and local Docker, with Azure evaluation templates. The accepted release includes the **Find your space. Build your future.** homepage, compact admin analytics, direct-INR synthetic pricing, editable profiles and agent review, India listing/filter workflows, pen drawing and cyan marker hover. The reference screenshots guide the layout; inventory and financing examples remain illustrative.
 
 ## Repository and local access
 
@@ -85,7 +85,9 @@ The polygon and `boundary_q` survive URL navigation and saved searches. One simp
 
 ## Verification and known limits
 
-See [testing](TESTING.md) for commands and [verification](VERIFICATION.md) for dated results and local evidence. Backend checks must use isolated SQLite; fixtures reject PostgreSQL table resets. Live browser scripts can create test accounts and records. The user-management update passed 149 isolated backend cases and 11 focused live account checks, including 320/390px layouts. Original fields in all six business tables and all 21 uploaded photos match the pre-upgrade snapshot. The drawing follow-up passed 14 read-only browser checks, and sale/rental cyan hover passed two focused checks. The final deployed frontend assets are `index-CUesXYZG.css` and `index-aQK23O7b.js`. Earlier price/filter/branding checks are historical evidence; they were not repeated for these visual refinements.
+See [testing](TESTING.md) for commands and [verification](VERIFICATION.md) for dated evidence. The release's isolated backend suite passed 166 cases. The final combined homepage/admin workflow passes 17 checks; four public-pricing and three card-hover checks are separate implementation evidence. Earlier account/filter/drawing runs remain historical records, not claims of rerunning those suites for a headline change. Backend tests must use isolated SQLite; live workflow scripts can leave test history, while the combined homepage/admin script only creates a login session.
+
+Current local frontend assets are `index-C3ZRAcB0.css` / `index-OwmaSPV4.js`. Use Ctrl+F5 after deployment and check readiness. All 16 Markdown documents are synchronised; there are no maintained Word editions. Local backups, screenshots, browser tooling and private records remain ignored.
 
 External map tiles need internet access. Satellite uses Esri; Street View opens an external Google Maps link. Climate-risk data is unavailable. Nearby radius is straight-line distance. RERA/approval fields are owner supplied. EMI/credit presets are illustrative and do not connect to lenders. No real listing feed, valuation, payment, rental application, external notification or verified-agent service is connected. The built-in 3D model is a synthetic canvas demonstration.
 
@@ -105,7 +107,32 @@ The current identity displays **RealSite.in** (with the .in suffix at 80% of the
 | Cursor / illustrative model | `frontend/public/cursors/pen.svg`, `frontend/public/tours/demo-3d.html` |
 | Listing workflow and facts | `listing.jsx`, `listing-features.jsx`, `property-facts.jsx` |
 | Profiles, agent review, account security | `backend/app/accounts.py`, `frontend/src/profile.jsx`, `account-admin.jsx`, `profile.css` |
+| Admin analytics | `backend/app/analytics.py`, `frontend/src/analytics.jsx`, `analytics.css`, integration in `admin.jsx` |
 | Shared API predicates | `backend/app/main.py`, `advanced_filters.py`, `map_boundary.py` |
-| Persistence / demo / uploads | `models.py`, `migrations.py`, `seed.py`, `uploads.py` |
+| Persistence / demo / uploads | `models.py`, `migrations.py`, `seed.py`, `demo_pricing.py`, `uploads.py` |
 | Validation | `backend/tests/`, `frontend/scripts/`, `scripts/verify_*.py` |
 | Infrastructure | `compose.yml`, `infra/` |
+
+## Accepted homepage and admin analytics
+
+The homepage uses **Find your space. Build your future.** as live white bold text, with a line break between the sentences. The existing photograph, subtitle and search remain available.
+
+Admin opens Analytics by default: four compact KPIs and nine charts, light card shadows, a thin hover border and a 2px KPI lift with reduced-motion support. Refresh and Export city report sit on the filter toolbar's right. Tabs remain above every management section and sticky while scrolling, including Listings and Enquiries. Repeated intros/context banners have been removed.
+
+The full-width **Listing & enquiry activity** plot is the third chart row, below the inventory/account overviews. Blue/teal grouped bars show actual new-listing/enquiry totals; account growth stays a line. The protected, read-only `/api/admin/analytics` supports 30/90/365 India calendar days and all/owner/synthetic listing datasets. These yield 30 daily, 13 seven-day or 13 thirty-day groups respectively; final groups can be shorter. There is no 120-day option.
+
+Inventory is a current snapshot; enquiries and listing additions are period events. Accounts/agents cover the whole portal regardless of listing dataset. Medians separate sale prices and monthly rents; enquiry intensity is not conversion rate. See [admin analytics](ADMIN-ANALYTICS.md) for formulas, export and limitations. Analytics/pricing need no new migration or dependency. Rebuild API/web while retaining data volumes; run `python scripts/verify_admin_analytics.py` for the final 17-check presentation workflow.
+
+## Indian demo price update — 11 October 2026
+
+Fresh seeds use `app/demo_pricing.py` to price the 100 homes directly in INR by city, locality, area and type. See [demo assumptions and medians](DEMO.md#indian-demo-pricing). Startup preserves existing price edits; repricing an older local demo is an explicit operation:
+
+```powershell
+docker compose run --rm --no-deps api python -m app.demo_pricing
+docker compose run --rm --no-deps api python -m app.demo_pricing --apply
+python scripts/export_demo.py
+```
+
+Take a database backup before applying an inventory update and review the preview. Only recognised original seed rows with matching core facts, original price and compatible previous price qualify. Updated/customised rows are skipped, and manually entered properties are excluded. The command changes only `price` and `previous_price`, then invalidates Redis listing caches. The preview's `city_after` summarises planned changes only; it is not an aggregate of the entire city inventory. Repeating after this release finds zero changes. Deploy only API/web and retain existing volumes.
+
+The local application is updated and healthy, with 98 repriced seed homes and two already at the new amount. All 142 properties retain identical non-price fields; the other eight business tables have identical fingerprints. The 100-property JSON export is refreshed. The pricing implementation passed 166 isolated backend cases and four focused public-pricing checks. Final homepage/admin verification and current assets are recorded above. The listing/enquiry chart is grouped bars; account growth remains a line. Backup and preservation evidence remain in ignored `artifacts/before-india-pricing.sql` and `artifacts/india-pricing-*`.

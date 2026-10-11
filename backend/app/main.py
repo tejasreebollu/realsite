@@ -595,3 +595,6 @@ app.include_router(create_upload_router(current_user, database, rate_limit))
 
 from .accounts import create_account_router
 app.include_router(create_account_router(current_user, admin_user, database, rate_limit, user_dict, invalidate))
+
+from .analytics import create_analytics_router
+app.include_router(create_analytics_router(admin_user, database))

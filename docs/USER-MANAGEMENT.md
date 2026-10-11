@@ -10,11 +10,15 @@ One public account buys, sells and rents. An approved agent uses that same login
 | --- | --- |
 | User | Own profile, password/email settings, favourites/searches/enquiries, own listings, agent application |
 | Agent | All user capabilities plus an approved public professional profile |
-| Admin | Own profile/settings, account search/edit/suspend/reactivate, agent review, account activity, existing listing moderation |
+| Admin | Own profile/settings, read-only analytics and city CSV, account search/edit/suspend/reactivate, agent review, account activity, existing listing moderation |
 
 Public registration always creates a user. Agent status is assigned by administrator review. Administrator accounts are provisioned separately; this release does not add an administrator creation or arbitrary role-change interface.
 
 **My Profile** supports name, mobile, city, private biography and a photo. Indian mobile numbers accept ten digits beginning with 6–9, optionally prefixed with +91. Photo upload accepts JPEG/PNG/WebP up to 5 MB, strips metadata and uses the existing owner-scoped image volume. Uploading previews the photo; Save profile persists it. Another account cannot reuse your uploaded photo as its avatar. Name/photo appear publicly for an approved agent; account email and private biography are not published. Mobile appears in the directory only when the agent opts in.
+
+## Analytics access
+
+Only administrators can request [admin analytics](ADMIN-ANALYTICS.md); public users and agents do not gain access. Listing datasets scope inventory/enquiries, while account and agent charts cover the whole portal. CSV exports aggregate counts and prices without personal contact fields or enquiry messages. The dashboard changes no role-assignment or profile-edit permissions. Demo repricing also leaves account records, logins and uploaded images unchanged.
 
 ## Account Settings
 
@@ -87,3 +91,7 @@ The browser check creates its own account/photo/listing, archives the listing, r
 ## Shared search experience
 
 Users, approved agents and administrators retain the same public search interface. Filtered pins remain visible while drawing a boundary; hovering a property card highlights its matching pin with a thin cyan glow. Professional profile or account edits do not reset saved searches. Suspension blocks authenticated account access but preserves existing records and requires separate listing archival when needed.
+
+## Account analytics
+
+The admin Analytics tab reports role composition, active/suspended totals, new registrations and the agent application pipeline. These aggregate charts include all portal accounts, including labelled demo accounts, regardless of the selected listing dataset. They do not publish personal details. Accounts, Agent reviews and Account activity retain their existing controls. See [admin analytics](ADMIN-ANALYTICS.md).

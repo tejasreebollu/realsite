@@ -2,6 +2,12 @@
 
 Updated: 11 October 2026.
 
+## Homepage and dashboard presentation
+
+The approved homepage headline is **Find your space. Build your future.**, rendered as live white text with a line break between the sentences. It keeps the existing bold Inter treatment, hero photograph, subtitle and search control. This release adds no new photograph or bitmap wordmark.
+
+Admin charts use native SVG and CSS in `frontend/src/analytics.jsx` and `analytics.css`, without a chart-library dependency. The activity plot measures its container width to keep labels and grouped bars legible. See [analytics](ADMIN-ANALYTICS.md) and [current verification](VERIFICATION.md) for the compact layout and deployed assets.
+
 The five screenshots supplied on 8 October 2026 are layout references for the homepage and sale/rental split map/list views. RealSite uses its own portal identity with these layouts.
 
 The current logo uses live HTML text reading **RealSite.in** (with the .in suffix at 80% of the main lettering size), in the same Inter family as the homepage headline, with weight 900, a blue gradient, 0.15px letter spacing and a light shadow. Lettering is upright and uses the user's requested mixed case. It is rendered by the browser rather than downscaled from a generated bitmap. Inter weights 400-900 are requested through the existing Google Fonts stylesheet; Arial remains the fallback.

@@ -2,6 +2,10 @@
 
 Updated: 11 October 2026.
 
+## Current demo marker amounts
+
+Map pins and property cards show the revised stored INR amounts for qualifying synthetic homes. [Demo pricing](DEMO.md#indian-demo-pricing) explains the illustrative assumptions. The price update preserves coordinates, selected map mode, drawn geometry and original-city restoration; it adds no basemap or climate-risk integration. Filtered pins remain visible while drawing and card hover retains the thin cyan highlight.
+
 Open a Buy or Rent search and click **Map** beside the zoom controls at the bottom right of the map. On mobile, first use the floating Map button to switch from the listing view to the map.
 
 The panel reproduces the supplied reference's Map Options heading, three view choices, and two-column Climate Risk choices.

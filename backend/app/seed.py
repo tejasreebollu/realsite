@@ -2,6 +2,7 @@ import random
 from sqlalchemy import select
 from .models import AuthSession, Favorite, Inquiry, Property, SavedSearch, UploadedImage, User
 from .passwords import hash_password
+from .demo_pricing import scenario_price
 
 CITIES = {
     "Hyderabad": {"state": "Telangana", "lat": 17.4401, "lng": 78.3910, "pin": "500032", "areas": ["Gachibowli", "Jubilee Hills", "Kondapur", "Banjara Hills", "Kokapet", "Madhapur"]},
@@ -39,9 +40,9 @@ def seed(db):
             area = info["areas"][i % 6]
             beds = [3, 4, 2, 3, 4, 2, 3, 5][i % 8]
             sqft = beds * 450 + rng.randrange(100, 600, 50)
-            price = (rng.randrange(24, 95) * 1000) if rent else rng.randrange(65, 380) * 100000
-            if city == "Mumbai":
-                price = int(price * 1.7)
+            # Retain the old random draw so seeded coordinates and sizes stay stable.
+            rng.randrange(24, 95) if rent else rng.randrange(65, 380)
+            price = scenario_price(city, i, sqft, ["Apartment", "Villa", "House"][i % 3], "rent" if rent else "sale")
             image = i % 12 + 1
             values = dict(title=f"{beds} BHK {['Apartment', 'Villa', 'Independent house'][i % 3]} in {area}", address=f"{12 + i}, {area} Road, {area}", city=city, state=info["state"], pincode=info["pin"], price=price, beds=beds, baths=max(2, beds - 1), sqft=sqft, kind=["Apartment", "Villa", "House"][i % 3], purpose="rent" if rent else "sale", lat=info["lat"] + rng.uniform(-0.07, 0.07), lng=info["lng"] + rng.uniform(-0.07, 0.07), images=[f"/images/home-{image}.jpg", f"/images/home-{(image + 2) % 12 + 1}.jpg", "/images/interior.jpg"], amenities=["Parking", "Security", "Power backup", "Balcony"] + (["Swimming pool", "Gym"] if i % 2 == 0 else ["Garden"]), description=f"Discover a beautifully designed {beds}-bedroom home in {area}, {city}. Bright living spaces, thoughtful finishes, and a spacious layout make room for everything you love. Enjoy easy access to local shops, schools, and everyday essentials. This is a fictional demonstration listing; photos are illustrative and are not photographs of an actual property at this address.", badge=badges[i % len(badges)], agent=["Ananya Sharma", "Arjun Reddy", "Priya Mehta", "Vikram Rao"][i % 4], demo=True)
             key = f"india-demo-v2:{city}:{i}"
