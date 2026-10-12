@@ -1,6 +1,6 @@
 # RealSite feature scope
 
-Updated: 11 October 2026.
+Updated: 12 October 2026.
 
 RealSite is a real estate portal for **India** using React, FastAPI, PostgreSQL, Azure, Redis, and local Docker. The supplied screenshots are visual references, not application specifications or instructions to scrape third-party data.
 
@@ -17,7 +17,7 @@ RealSite is a real estate portal for **India** using React, FastAPI, PostgreSQL,
 | Personal workspace | Favourites, saved searches, recent views, enquiry inbox |
 | Sellers/owners | Separate property sale, plot sale and rental forms, optional India search attributes, map picker, photo uploads, edit/archive and enquiries |
 | Administration | Compact four-KPI/nine-chart dashboard, full-width third-row grouped activity bars, light card hover feedback, sticky management tabs, 30/90/365-day period/dataset controls, city performance, INR medians, planning signals, aggregate CSV; city/status inventory filters, paginated listings/accounts/enquiries, archive/restore, account edits/suspension, agent reviews and account activity; admin-only API and UI |
-| Client demo | 100 synthetic properties across five cities with direct-INR city/locality/area/type pricing assumptions, generic user and admin logins, saved homes/searches/enquiries and JSON snapshot |
+| Client demo | 100 synthetic properties across five cities with user-selected city sale ranges and unchanged rental assumptions, generic user and admin logins, saved homes/searches/enquiries and JSON snapshot |
 | Finance | Adjustable home loan EMI calculator, INR price histogram/slider and estimated monthly-payment filtering with demo financing assumptions |
 | Agents | Single-account applications, admin approval/rejection, approved directory, service cities, optional public phone and owner-ID listing searches |
 | Platform | Four-service Docker stack, readiness, Redis caching/rate limits, Azure evaluation deployment |
@@ -53,4 +53,4 @@ Drawn-area search supports one simple map polygon, pen-first mouse/touch drawing
 
 Admin reports describe stored portal activity, with synthetic inventory labelled separately. They do not establish external market forecasts, revenue, completed transactions or unique-buyer conversion. See [analytics scope and definitions](ADMIN-ANALYTICS.md).
 
-The listing/enquiry activity chart uses grouped bars. Synthetic Indian prices follow city/locality/area/type assumptions; owner pricing is preserved. This provides internally consistent presentation data, not a verified valuation service. See [demo pricing](DEMO.md#indian-demo-pricing).
+The listing/enquiry activity chart uses grouped bars. Synthetic sale prices span the requested city ranges, using city/locality/area/type scores; rental and owner pricing is preserved. This provides internally consistent presentation data, not a verified valuation service. See [demo pricing](DEMO.md#indian-demo-pricing).

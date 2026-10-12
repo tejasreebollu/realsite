@@ -1,6 +1,6 @@
 # Client demo
 
-Updated: 11 October 2026.
+Updated: 12 October 2026.
 
 ## Accepted homepage and compact dashboard
 
@@ -115,18 +115,18 @@ See [admin analytics](ADMIN-ANALYTICS.md) for chart definitions and planning sug
 
 ## Indian demo pricing
 
-The 100 synthetic homes use deterministic Indian sale and monthly-rent assumptions in `backend/app/demo_pricing.py`. Prices depend on the city, locality, floor area and property type; larger homes and Mumbai generally cost more. This is direct INR pricing, with no USD conversion. The previous seed used broad random INR amounts unrelated to the home's area.
+Updated on 12 October 2026 to the requested presentation ranges. The 60 synthetic sale homes are priced directly in INR using city limits in `backend/app/demo_pricing.py`. Each city's 12 sale homes spans its full configured range, including both endpoints. The 40 synthetic rentals retain their previous amounts.
 
-| City | Base sale assumption ₹/sqft | Base rent assumption ₹/sqft/month | Demo median sale | Demo median monthly rent |
-| --- | ---: | ---: | ---: | ---: |
-| Hyderabad | 5,200 | 18 | ₹98.25 lakh | ₹42,750 |
-| Bengaluru | 6,200 | 20 | ₹1.07 crore | ₹40,500 |
-| Mumbai | 12,500 | 32 | ₹2.43 crore | ₹71,500 |
-| Pune | 4,800 | 16 | ₹81 lakh | ₹30,000 |
-| New Delhi | 6,200 | 19 | ₹1.14 crore | ₹38,000 |
+| City | Requested sale range | Demo median sale | Demo median monthly rent |
+| --- | --- | ---: | ---: |
+| Hyderabad | ₹2–10 crore | ₹4.1275 crore | ₹42,750 |
+| Mumbai | ₹5–20 crore | ₹11.9600 crore | ₹71,500 |
+| Pune | ₹3–12 crore | ₹5.2775 crore | ₹30,000 |
+| Bengaluru | ₹3–15 crore | ₹5.4425 crore | ₹40,500 |
+| New Delhi | ₹3–15 crore | ₹7.3225 crore | ₹38,000 |
 
-Locality multipliers range from 0.80–1.40. Apartments use a type multiplier of 1.00, houses 1.08 and villas 1.18, with reproducible variation of 0.88–1.04. Sale values round to ₹50,000 and monthly rents to ₹500. The current 60 sale homes range from ₹52.5 lakh to ₹3.69 crore; the 40 rentals range from ₹19,000 to ₹92,000/month. The seed contains 2–5 bedroom homes, so it does not represent the full market of smaller budget units or luxury properties.
+Within each city, an area/locality/type score with reproducible variation determines relative sale prices. Scores are normalised against the original 12 sale seed homes into the requested city bounds, clamped and rounded to ₹50,000. The prior sale model is retained only to recognise safe upgrades. Rentals keep the existing city/locality/area/type formula, rounded to ₹500; their base assumptions remain ₹18/20/32/16/19 per sqft/month for Hyderabad/Bengaluru/Mumbai/Pune/New Delhi. The 40 rental amounts still range from ₹19,000 to ₹92,000/month.
 
-These numbers are chosen demonstration assumptions, not measured city averages or verified quotes for the illustrative addresses. [Magicbricks locality price trends](https://www.magicbricks.com/Property-Rates-Trends/ALL-RESIDENTIAL-rates-in-Hyderabad) and [its rental research](https://property.magicbricks.com/microsite/research-insights/rental-index/index.html) were reviewed for Indian pricing context; the formula is not a valuation model or live feed.
+These are user-selected synthetic presentation ranges, not measured market averages, valuations or USD conversions. The prior price-trend references were background research for the previous model; they are not evidence for these selected ranges. The seed contains 2–5 bedroom homes and does not describe all Indian inventory.
 
-The local update changed 98 unchanged seed prices; two already matched. It preserved all other property fields, owner-entered prices, account records, photos, favourites, saved searches and enquiries. Older surplus archived seed rows are retained with their historical amounts. Normal restarts do not reset presentation edits. The exported 100-property snapshot matches the live synthetic inventory; use the Synthetic listings dataset to show its medians separately from owner/test inventory.
+The local update changed all 60 eligible synthetic sale homes and preserved all 40 rentals. Owner-entered/customised prices, property details, photos and business records remain unchanged. Only recognised seed rows with unchanged core facts and a compatible original/prior-model price pair qualify. Existing previous prices are kept 5% above the new amount. The explicit CLI is sale-only, defaults to preview and clears listing caches when applying changes. Repeating finds zero changes; normal restarts preserve edits. Older archived surplus records retain their historical amounts. The refreshed 100-property JSON matches the live synthetic inventory. Use the Synthetic listings dataset to show its medians separately from owner/test inventory.

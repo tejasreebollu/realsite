@@ -1,9 +1,10 @@
 """Demo-only price upgrades must preserve owner edits and stored relationships."""
+import pytest
 from sqlalchemy import select
 from test_portal import client, register, new_listing
 from app.models import SessionLocal, Property
 from app.seed import seed, CITIES
-from app.demo_pricing import legacy_scenarios, reprice_existing, scenario_price
+from app.demo_pricing import legacy_scenarios, reprice_existing, scenario_price, prior_scenario_price, SALE_RANGES
 
 
 def record(item):
@@ -29,7 +30,7 @@ def test_fresh_seed_uses_direct_inr_scenarios_with_stable_facts(client):
             assert all(getattr(item,k)==v for k,v in facts.items() if k != 'price')
             assert item.price == scenario_price(item.city,index,item.sqft,item.kind,item.purpose)
             assert item.price % (500 if item.purpose == 'rent' else 50000) == 0
-            assert 10000 <= item.price <= 200000 if item.purpose == 'rent' else 3000000 <= item.price <= 60000000
+            assert 10000 <= item.price <= 200000 if item.purpose == 'rent' else SALE_RANGES[item.city][0] <= item.price <= SALE_RANGES[item.city][1]
         before = {p.id:record(p) for p in rows}
         seed(db);seed(db)
         assert {p.id:record(p) for p in db.scalars(select(Property))} == before
@@ -89,3 +90,43 @@ def test_customized_core_facts_are_never_repriced(client):
         before={p.id:record(p) for p in homes[:4]}
         assert {r['id'] for r in reprice_existing(db,CITIES,apply=True)['changes']}==baseline-{p.id for p in homes[:4]}
         assert {id:record(db.get(Property,id)) for id in before}==before
+
+
+@pytest.mark.parametrize('city', ['Hyderabad', 'Mumbai', 'Pune', 'Bengaluru', 'New Delhi'])
+def test_each_city_sale_inventory_spans_requested_range(city):
+    originals = [(index, facts) for _, index, facts in legacy_scenarios(CITIES) if facts['city'] == city]
+    prices = [scenario_price(city, index, facts['sqft'], facts['kind'], 'sale')
+              for index, facts in originals if facts['purpose'] == 'sale']
+    assert len(prices) == 12
+    assert (min(prices), max(prices)) == SALE_RANGES[city]
+    assert len(set(prices)) >= 10
+    for index, facts in originals:
+        if facts['purpose'] == 'rent':
+            assert scenario_price(city, index, facts['sqft'], facts['kind'], 'rent') == prior_scenario_price(city, index, facts['sqft'], facts['kind'], 'rent')
+
+
+def test_prior_inr_sale_upgrade_preserves_all_rentals_and_is_idempotent(client):
+    originals = {key: index for key, index, _ in legacy_scenarios(CITIES)}
+    with SessionLocal() as db:
+        for item in db.scalars(select(Property)):
+            item.price = prior_scenario_price(item.city, originals[item.seed_key], item.sqft, item.kind, item.purpose)
+            if item.previous_price is not None:
+                item.previous_price = round(item.price * 1.05)
+        db.commit()
+        before = {p.id: record(p) for p in db.scalars(select(Property))}
+        preview = reprice_existing(db, CITIES)
+        assert len(preview['changes']) == 60
+        assert all(r['purpose'] == 'sale' for r in preview['changes'])
+        assert {p.id: record(p) for p in db.scalars(select(Property))} == before
+        applied = reprice_existing(db, CITIES, apply=True)
+        assert applied['changes'] == preview['changes']
+        for item in db.scalars(select(Property)):
+            old = before[item.id]
+            if item.purpose == 'rent':
+                assert record(item) == old
+            else:
+                assert {k for k, v in record(item).items() if v != old[k]} <= {'price', 'previous_price'}
+                assert SALE_RANGES[item.city][0] <= item.price <= SALE_RANGES[item.city][1]
+                if item.previous_price is not None:
+                    assert item.previous_price == round(item.price * 1.05)
+        assert reprice_existing(db, CITIES, apply=True)['changes'] == []

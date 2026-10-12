@@ -8,10 +8,12 @@ import argparse
 import json
 import random
 from statistics import median
+from functools import lru_cache
 from sqlalchemy import select
 from .models import Property, SessionLocal
 
-# Base sale INR/sqft, rent INR/sqft/month, and locality adjustments in CITIES order.
+# Prior demo model: sale INR/sqft, rent INR/sqft/month, locality adjustments.
+# Retained to recognise unchanged existing rows and preserve rental amounts.
 PROFILES = {
     'Hyderabad': (5200, 18, [1.10, 1.30, 1.00, 1.25, 1.10, 1.15]),
     'Bengaluru': (6200, 20, [1.00, 1.25, .90, 1.15, 1.10, .95]),
@@ -21,14 +23,47 @@ PROFILES = {
 }
 
 
-def scenario_price(city, index, sqft, kind, purpose):
-    """Price correlates with area, city, locality and type, with stable variation."""
+# User-selected sale demo ranges, in whole rupees (one crore = 10,000,000).
+SALE_RANGES = {
+    'Hyderabad': (20_000_000, 100_000_000),
+    'Mumbai': (50_000_000, 200_000_000),
+    'Pune': (30_000_000, 120_000_000),
+    'Bengaluru': (30_000_000, 150_000_000),
+    'New Delhi': (30_000_000, 150_000_000),
+}
+
+
+def _scenario_amount(city, index, sqft, kind, purpose):
     sale_rate, rent_rate, localities = PROFILES[city]
     variation = random.Random(f'realsite-india-prices-v1:{city}:{index}').uniform(.88, 1.04)
     type_factor = {'Apartment': 1.0, 'Villa': 1.18, 'House': 1.08}[kind]
-    amount = sqft * (rent_rate if purpose == 'rent' else sale_rate) * localities[index % 6] * type_factor * variation
+    return sqft * (rent_rate if purpose == 'rent' else sale_rate) * localities[index % 6] * type_factor * variation
+
+
+def prior_scenario_price(city, index, sqft, kind, purpose):
+    """The previous direct-INR model, for safe upgrades and unchanged rents."""
     step = 500 if purpose == 'rent' else 50000
-    return max(step, round(amount / step) * step)
+    return max(step, round(_scenario_amount(city, index, sqft, kind, purpose) / step) * step)
+
+
+@lru_cache(maxsize=5)
+def _sale_score_bounds(city):
+    from .seed import CITIES
+    scores = [_scenario_amount(city, index, facts['sqft'], facts['kind'], 'sale')
+              for _, index, facts in legacy_scenarios(CITIES)
+              if facts['city'] == city and facts['purpose'] == 'sale']
+    return min(scores), max(scores)
+
+
+def scenario_price(city, index, sqft, kind, purpose):
+    """Stable user-selected sale ranges; rentals retain the prior model exactly."""
+    if purpose == 'rent':
+        return prior_scenario_price(city, index, sqft, kind, purpose)
+    lower, upper = SALE_RANGES[city]
+    score = _scenario_amount(city, index, sqft, kind, purpose)
+    low_score, high_score = _sale_score_bounds(city)
+    fraction = max(0, min(1, (score - low_score) / (high_score - low_score)))
+    return max(lower, min(upper, round((lower + fraction * (upper - lower)) / 50000) * 50000))
 
 
 def legacy_scenarios(cities):
@@ -55,15 +90,16 @@ def legacy_scenarios(cities):
 def reprice_existing(db, cities, apply=False):
     original = {key: (index, facts) for key, index, facts in legacy_scenarios(cities)}
     plan, skipped = [], []
-    for item in db.scalars(select(Property).where(Property.demo.is_(True), Property.seed_key.in_(list(original)))):
+    for item in db.scalars(select(Property).where(Property.demo.is_(True), Property.purpose == 'sale', Property.seed_key.in_(list(original)))):
         index, facts = original[item.seed_key]
-        if any(getattr(item, key) != value for key, value in facts.items()):
-            skipped.append(item.id)
-            continue
-        if item.previous_price not in (None, round(facts['price'] * 1.05)):
+        if any(getattr(item, key) != value for key, value in facts.items() if key != 'price'):
             skipped.append(item.id)
             continue
         amount = scenario_price(item.city, index, item.sqft, item.kind, item.purpose)
+        prior = prior_scenario_price(item.city, index, item.sqft, item.kind, item.purpose)
+        if item.price not in (facts['price'], prior, amount) or item.previous_price not in (None, round(item.price * 1.05)):
+            skipped.append(item.id)
+            continue
         previous = round(amount * 1.05) if item.previous_price is not None else None
         if amount == item.price and previous == item.previous_price: continue
         plan.append({'id': item.id, 'seed_key': item.seed_key, 'city': item.city, 'purpose': item.purpose,
@@ -75,7 +111,7 @@ def reprice_existing(db, cities, apply=False):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Safely reprice unchanged synthetic demo homes; defaults to a preview.')
+    parser = argparse.ArgumentParser(description='Safely reprice unchanged synthetic sale homes; rentals are untouched; defaults to a preview.')
     parser.add_argument('--apply', action='store_true')
     args = parser.parse_args()
     from .seed import CITIES

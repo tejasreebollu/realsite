@@ -1,6 +1,6 @@
 # RealSite testing and release checks
 
-Updated: 11 October 2026. Run from the repository root. See [verification](VERIFICATION.md) for dated outcomes and [handoff](HANDOFF.md) for setup and data preservation.
+Updated: 12 October 2026. Run from the repository root. See [verification](VERIFICATION.md) for dated outcomes and [handoff](HANDOFF.md) for setup and data preservation.
 
 ## Backend isolation
 
@@ -84,7 +84,7 @@ At the compact-layout stage, `python scripts/verify_admin_analytics.py` passed 1
 
 ### Grouped bars and Indian pricing follow-up
 
-The current full isolated backend suite passes **166 cases**, including four new `backend/tests/test_demo_pricing.py` cases. They verify fresh prices with stable seed facts, size/type/city relationships, preview/apply/repeat behavior, preservation of manual/customised rows and non-price fields, archive state, and restart preservation. Tests use disposable SQLite, not the live PostgreSQL data. One existing Starlette/AnyIO deprecation warning remains.
+The 11 October full isolated backend suite passed **166 cases**, including four new `backend/tests/test_demo_pricing.py` cases. They verify fresh prices with stable seed facts, size/type/city relationships, preview/apply/repeat behavior, preservation of manual/customised rows and non-price fields, archive state, and restart preservation. Tests use disposable SQLite, not the live PostgreSQL data. One existing Starlette/AnyIO deprecation warning remains.
 
 At the grouped-bar stage, the reusable analytics browser script passed **13 checks**, adding grouped-bar counts and proportional heights against the API, all reporting windows, and retention of the account-growth line. Four focused read-only pricing checks confirm all five cities' sale/rent prices against the exported 100 homes, sorting/budget filters, Hyderabad cards/map prices and synthetic city medians. No JavaScript errors occurred. API/web builds, health, repeat preview and post-update fingerprints passed. Evidence is in ignored `artifacts/india-pricing-*`; only synthetic `data/demo-properties.json` is tracked.
 
@@ -97,3 +97,9 @@ At the full-width-row stage, the analytics browser workflow passed 14 checks. It
 `python scripts/verify_admin_analytics.py` passes **17 checks**: three public-homepage checks plus 14 admin checks. It verifies the exact accepted headline, hero bounds and search at 1920/1440/768/390/320px, all nine charts, the full-width third row, API-proportional grouped bars, 30/90/365-day buckets, dataset changes, sale/rent switching, CSV escaping, sticky management tabs, error/retry and empty data. It writes reports/screenshots only under ignored `artifacts/` and creates a login session without changing business records.
 
 The earlier **166-case** isolated backend result covers this release's backend, including four repricing safety cases; the final headline/doc edits do not change backend code. Four focused public-pricing checks and three card-hover checks are separate evidence from this implementation. Re-run affected tests when source or runtime behaviour changes, rather than treating previous evidence as a fresh run. See [verification](VERIFICATION.md) for final release outcomes.
+
+## Requested city sale ranges — 12 October 2026
+
+`test_demo_pricing.py` now includes five city-range cases plus an upgrade case for the prior INR model. They verify exact lower/upper endpoints, varied sale prices, unchanged rental formulas, sale-only preview/apply, rental/non-price preservation and idempotence. Existing safety checks retain coverage of manual/customised records and restart preservation. The search regression's budget was updated from ₹2 crore to ₹6 crore for the higher Hyderabad stock.
+
+The isolated run passed 171 of 172 cases; the budget-adjusted search case then passed its targeted rerun, validating all 172 cases across the two runs. One existing Starlette/AnyIO deprecation warning remains. Four read-only public-pricing checks confirm live city/purpose amounts against the export, sorting and bounds, Hyderabad cards/map markers and synthetic admin medians. Private before/after fingerprints verify preservation. The earlier 17-check homepage/admin workflow is prior evidence, not a fresh run for this backend/data update.

@@ -1,5 +1,15 @@
 # Verification record · release 11 October 2026
 
+## Requested sale ranges — 12 October 2026
+
+Applied the user-selected synthetic sale ranges: Hyderabad ₹2–10 crore, Mumbai ₹5–20 crore, Pune ₹3–12 crore and Bengaluru/New Delhi ₹3–15 crore. Each city's 12 sale homes spans both endpoints. All 60 eligible sale homes changed; all 40 synthetic rentals retain their exact stored amounts. Fresh seeding uses the same model; normal startup preserves existing edits. Repricing recognises original/prior-model prices and matching core facts, excludes rentals/manual/customised rows, adjusts existing previous prices and invalidates listing caches.
+
+A PostgreSQL backup and business-data fingerprints preceded application. All 142 properties retain identical non-price fields; all other business tables and the 82 unplanned property price pairs are unchanged. The 100-property export matches live inventory. A repeat preview finds zero changes. The API-only build and deployment are healthy; PostgreSQL/Redis/photo volumes were retained and frontend assets did not change.
+
+The isolated backend run passed 171 cases with one failure caused by the search test's old ₹2 crore budget. After adapting that fixture to ₹6 crore, its targeted rerun passed: all 172 cases are validated across the two runs, including six new range/upgrade cases. Four focused public-pricing browser checks passed with no JavaScript errors. Earlier homepage/admin/hover browser reports are prior evidence. Documentation links and Git whitespace were checked.
+
+Evidence is ignored under `artifacts/city-ranges-*-2026-10-12.json`, `before-city-ranges-2026-10-12.sql` and `city-ranges-public-results-2026-10-12.json`. These ranges are synthetic presentation assumptions, not verified market valuations. This pricing update is prepared for publication on main; Git history identifies the published revision. Private backups and local evidence remain excluded.
+
 ## Final documentation and homepage release — 11 October 2026
 
 All **16 Markdown documents** are synchronised, including handoff, setup/Azure, architecture, scope, demo, account, listing, map and filter guides. No maintained Word editions exist. The homepage displays **Find your space. Build your future.**; the compact admin dashboard retains four KPIs, nine charts, sticky management tabs, toolbar actions, light hover feedback and the full-width third-row activity plot. The period menu remains 30/90/365 days.

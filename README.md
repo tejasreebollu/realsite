@@ -1,6 +1,6 @@
 # RealSite Real Estate Portal · India
 
-Updated: 11 October 2026.
+Updated: 12 October 2026.
 
 RealSite is a working real estate portal for India, with a React interface based on the supplied layout references, a FastAPI API, PostgreSQL persistence, Redis search caching and rate limits, and Docker Compose.
 
@@ -8,7 +8,7 @@ The approved portal logo reads **RealSite.in** as live Inter 900 text, with a bl
 
 Draw a custom area on the search map with the compact pen cursor, then Apply to filter properties inside it. Filtered property pins remain visible while drawing. Hover a result card to highlight its map pin with a thin cyan border and soft glow. Remove Boundary restores the original city and retains other filters, including after a refresh. See [drawn-area search](docs/DRAW-SEARCH.md).
 
-The 100 synthetic homes use Indian sale/rental assumptions based on city, locality, area and type. Admin Analytics includes grouped listing/enquiry bars. See [demo pricing](docs/DEMO.md#indian-demo-pricing) for ranges and limitations.
+The 60 synthetic sale homes now span the requested ranges: Hyderabad ₹2–10 crore, Mumbai ₹5–20 crore, Pune ₹3–12 crore, Bengaluru and New Delhi ₹3–15 crore. The 40 rental prices remain unchanged. Admin Analytics includes grouped listing/enquiry bars. See [demo pricing](docs/DEMO.md#indian-demo-pricing) for ranges and limitations.
 
 The homepage headline is **Find your space. Build your future.** Admin opens a compact Analytics view with four KPIs and nine charts. The full-width grouped activity bars sit on the third chart row, with 30/90/365-day reporting, dataset controls and city CSV export. Management tabs stay visible; cards have light shadows and a thin hover border, with a small KPI lift. See [admin analytics](docs/ADMIN-ANALYTICS.md).
 

@@ -1,6 +1,6 @@
 # RealSite project handoff
 
-Updated: 11 October 2026.
+Updated: 12 October 2026.
 
 RealSite is an India real estate portal built with React, FastAPI, PostgreSQL, Redis and local Docker, with Azure evaluation templates. The accepted release includes the **Find your space. Build your future.** homepage, compact admin analytics, direct-INR synthetic pricing, editable profiles and agent review, India listing/filter workflows, pen drawing and cyan marker hover. The reference screenshots guide the layout; inventory and financing examples remain illustrative.
 
@@ -85,7 +85,7 @@ The polygon and `boundary_q` survive URL navigation and saved searches. One simp
 
 ## Verification and known limits
 
-See [testing](TESTING.md) for commands and [verification](VERIFICATION.md) for dated evidence. The release's isolated backend suite passed 166 cases. The final combined homepage/admin workflow passes 17 checks; four public-pricing and three card-hover checks are separate implementation evidence. Earlier account/filter/drawing runs remain historical records, not claims of rerunning those suites for a headline change. Backend tests must use isolated SQLite; live workflow scripts can leave test history, while the combined homepage/admin script only creates a login session.
+See [testing](TESTING.md) for commands and [verification](VERIFICATION.md) for dated evidence. The 11 October release's isolated backend suite passed 166 cases. The 12 October price update validated 172 cases across the full run (171 passed) and the one budget-adjusted search case rerun. The final combined homepage/admin workflow passes 17 checks; four public-pricing and three card-hover checks are separate implementation evidence. Earlier account/filter/drawing runs remain historical records, not claims of rerunning those suites for a headline change. Backend tests must use isolated SQLite; live workflow scripts can leave test history, while the combined homepage/admin script only creates a login session.
 
 Current local frontend assets are `index-C3ZRAcB0.css` / `index-OwmaSPV4.js`. Use Ctrl+F5 after deployment and check readiness. All 16 Markdown documents are synchronised; there are no maintained Word editions. Local backups, screenshots, browser tooling and private records remain ignored.
 
@@ -125,7 +125,7 @@ Inventory is a current snapshot; enquiries and listing additions are period even
 
 ## Indian demo price update — 11 October 2026
 
-Fresh seeds use `app/demo_pricing.py` to price the 100 homes directly in INR by city, locality, area and type. See [demo assumptions and medians](DEMO.md#indian-demo-pricing). Startup preserves existing price edits; repricing an older local demo is an explicit operation:
+Fresh seeds use `app/demo_pricing.py` with the requested city sale ranges and unchanged rental model. Sale scores reflect locality, area and type. See [demo assumptions and medians](DEMO.md#indian-demo-pricing). Startup preserves existing price edits; repricing an older local demo is an explicit operation:
 
 ```powershell
 docker compose run --rm --no-deps api python -m app.demo_pricing
@@ -133,6 +133,12 @@ docker compose run --rm --no-deps api python -m app.demo_pricing --apply
 python scripts/export_demo.py
 ```
 
-Take a database backup before applying an inventory update and review the preview. Only recognised original seed rows with matching core facts, original price and compatible previous price qualify. Updated/customised rows are skipped, and manually entered properties are excluded. The command changes only `price` and `previous_price`, then invalidates Redis listing caches. The preview's `city_after` summarises planned changes only; it is not an aggregate of the entire city inventory. Repeating after this release finds zero changes. Deploy only API/web and retain existing volumes.
+Take a database backup before applying an inventory update and review the preview. Only recognised synthetic sale seed rows with matching core facts, an original or prior-model amount and compatible previous price qualify. Rentals are excluded. Updated/customised rows are skipped, and manually entered properties are excluded. The command changes only `price` and `previous_price`, then invalidates Redis listing caches. The preview's `city_after` summarises planned changes only; it is not an aggregate of the entire city inventory. Repeating after this release finds zero changes. Deploy only API/web and retain existing volumes.
 
-The local application is updated and healthy, with 98 repriced seed homes and two already at the new amount. All 142 properties retain identical non-price fields; the other eight business tables have identical fingerprints. The 100-property JSON export is refreshed. The pricing implementation passed 166 isolated backend cases and four focused public-pricing checks. Final homepage/admin verification and current assets are recorded above. The listing/enquiry chart is grouped bars; account growth remains a line. Backup and preservation evidence remain in ignored `artifacts/before-india-pricing.sql` and `artifacts/india-pricing-*`.
+The 11 October implementation repriced 98 seed homes; two already matched that earlier model. All 142 properties retain identical non-price fields; the other eight business tables have identical fingerprints. The 100-property JSON export is refreshed. The pricing implementation passed 166 isolated backend cases and four focused public-pricing checks. Final homepage/admin verification and current assets are recorded above. The listing/enquiry chart is grouped bars; account growth remains a line. Backup and preservation evidence remain in ignored `artifacts/before-india-pricing.sql` and `artifacts/india-pricing-*`.
+
+## Requested sale ranges — 12 October 2026
+
+The local portal and fresh seed now use Hyderabad ₹2–10 crore, Mumbai ₹5–20 crore, Pune ₹3–12 crore and Bengaluru/New Delhi ₹3–15 crore. Each city's 12 synthetic sale homes includes both endpoints. All 60 sale homes were updated; all 40 rentals are unchanged. Existing previous-price fields are adjusted to retain the demo reduction. See [current pricing and medians](DEMO.md#indian-demo-pricing).
+
+The API was rebuilt/deployed without replacing database, Redis or photo volumes. A database backup preceded the explicit apply. All 142 property records keep identical non-price fingerprints; all other business tables are unchanged. A repeat preview produces zero changes. The 100-home export is refreshed. Backend validation covered 172 cases across the full run and the corrected search-case rerun; four focused public-pricing checks cover live prices, filters, map markers and admin medians. Evidence stays private and ignored under `artifacts/city-ranges-*-2026-10-12.json` and `before-city-ranges-2026-10-12.sql`. Frontend assets are unchanged. Use Git history for the published source revision; database backups and local verification evidence are excluded from the release.

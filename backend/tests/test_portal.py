@@ -50,10 +50,10 @@ def new_listing():
 
 
 def test_search_filters_and_indian_market(client):
-    results = client.get("/api/properties", params={"q": "Hyderabad", "purpose": "sale", "beds": 3, "max_price": 20000000, "sort": "price_asc"}).json()
+    results = client.get("/api/properties", params={"q": "Hyderabad", "purpose": "sale", "beds": 3, "max_price": 60000000, "sort": "price_asc"}).json()
     assert results["total"] > 0
     items = results["items"]
-    assert all(p["city"] == "Hyderabad" and p["beds"] >= 3 and p["price"] <= 20000000 and p["purpose"] == "sale" for p in items)
+    assert all(p["city"] == "Hyderabad" and p["beds"] >= 3 and p["price"] <= 60000000 and p["purpose"] == "sale" for p in items)
     assert [p["price"] for p in items] == sorted(p["price"] for p in items)
     rent = client.get("/api/properties?q=Hyderabad&purpose=rent").json()
     assert rent["total"] == 8
