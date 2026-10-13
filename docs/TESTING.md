@@ -1,6 +1,6 @@
 # RealSite testing and release checks
 
-Updated: 12 October 2026. Run from the repository root. See [verification](VERIFICATION.md) for dated outcomes and [handoff](HANDOFF.md) for setup and data preservation.
+Updated: 13 October 2026. Run from the repository root. See [verification](VERIFICATION.md) for dated outcomes and [handoff](HANDOFF.md) for setup and data preservation.
 
 ## Backend isolation
 
@@ -65,6 +65,10 @@ The 10 October branding release rebuilt and deployed only the frontend. Focused 
 ## Release completion
 
 Validate Markdown links, public demo JSON and `git diff --check`. Confirm web/API builds, readiness and focused workflow results. Stage only intended source/assets/tests/docs and synthetic data; leave `.env`, `.tools`, backups and screenshots ignored. Fetch and inspect remote changes before pushing; use an ordinary push without force. Confirm `git rev-list --left-right --count HEAD...origin/main` is `0 0` after the push.
+
+## Azure PostgreSQL bootstrap
+
+Regenerate the single SQL bootstrap after changing the tracked synthetic export, then load it into a disposable PostgreSQL database twice. Confirm ten tables are created, exactly 100 demo listings exist after both runs, and each requested city sale range is present. The bootstrap must never include local credentials, accounts, sessions, messages, uploads or private records. Validate `infra/deploy.ps1` with the PowerShell parser and validate the Azure Compose overlay with a placeholder `PORTAL_DOMAIN`; those checks do not create Azure resources.
 
 Backend tests, local browser flows and a production asset build do not establish live inventory accuracy, independent RERA verification, lender eligibility, Azure runtime, production load/security or full accessibility certification.
 

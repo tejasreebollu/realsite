@@ -1,6 +1,6 @@
 # Architecture
 
-Updated: 11 October 2026.
+Updated: 13 October 2026.
 
 ## Current presentation and analytics flow
 
@@ -40,6 +40,8 @@ The shared Logo component in `frontend/src/main.jsx` renders RealSite.in as HTML
 | `inquiries` | Sender, property, message, phone, requested visit date |
 
 Schema creation uses SQLAlchemy `create_all` at startup. `app/migrations.py` applies additive role, demo-account flag, property seed-key, listing-type fields, `features` JSON and `previous_price` upgrades to existing databases and preserves existing rows. Existing buyer and seller roles become `user`, retaining their data and allowing both buying and selling. It also adds compatible profile/active columns and creates the account-management tables. This small idempotent compatibility migration supports the local demo; introduce versioned Alembic migrations before further schema changes or production rollout.
+
+For a fresh Azure PostgreSQL database, `data/azure-postgres-bootstrap.sql` is a standalone PostgreSQL alternative: it defines the complete current schema plus the 100 fictional listings, using stable `seed_key` values and `ON CONFLICT DO NOTHING`. It does not contain local accounts or private records. `scripts/generate_azure_bootstrap.py` regenerates it from the tracked public demo export whenever synthetic inventory changes. The deployment script disables startup seeding and applies this file after the database is ready.
 
 ## Authentication and authorisation
 

@@ -1,6 +1,6 @@
 # Azure evaluation deployment
 
-Updated: 11 October 2026.
+Updated: 13 October 2026.
 
 ## Deploying the analytics and pricing release
 
@@ -19,6 +19,7 @@ The included Azure path hosts the same Docker stack on one Ubuntu VM with Caddy 
 - `infra/compose.azure.yml`: remove the local web binding, add Caddy on ports 80/443, enable secure session cookies, disable known demo-account creation/login and existing demo sessions.
 - `infra/Caddyfile`: HTTPS reverse proxy and HTTP redirect.
 - `infra/deploy.ps1`: create resources, package/upload source, generate a database password, start the stack.
+- `data/azure-postgres-bootstrap.sql`: one portable PostgreSQL file that creates the portal tables and loads the 100 fictional property listings.
 
 Only HTTPS/HTTP and administrator-restricted SSH are permitted by the NSG. PostgreSQL, Redis, and FastAPI remain on the Docker network. VM size and region are parameters; availability and pricing must be checked for your subscription.
 
@@ -42,6 +43,20 @@ az account set --subscription '<subscription-id>'
 The script prints the static VM IP. Point the domain A record to that IP. The SSH client requests host fingerprint verification on its first connection. DNS propagation and outbound access to the certificate issuer must succeed before HTTPS is available.
 
 The deployment environment is stored in ignored `artifacts/azure.env` and uploaded as `~/portal/.env` with mode 600. It is preserved across reruns to avoid breaking the PostgreSQL credentials. Use a separate artifact directory/environment per deployment; do not reuse this file for a different VM or domain. The script is designed for a fresh evaluation VM and does not import local development database volumes.
+
+The deployment sets `SEED_DEMO=false` and then applies `data/azure-postgres-bootstrap.sql` after PostgreSQL is healthy. The SQL file creates all application tables and inserts the 100 synthetic property listings using stable seed keys. It is safe to re-run: it does not drop or truncate tables, and it does not overwrite a listing whose seed key already exists. It contains no accounts, passwords, sessions, enquiries, saved searches, uploads or local data. The listings are therefore unowned in Azure until a registered user creates or claims listings through a future moderation workflow.
+
+To initialize an Azure Database for PostgreSQL Flexible Server manually, connect with SSL and run the same one file:
+
+```powershell
+psql "host=<server>.postgres.database.azure.com port=5432 dbname=<database> user=<admin> sslmode=require" -v ON_ERROR_STOP=1 -f .\data\azure-postgres-bootstrap.sql
+```
+
+Regenerate it after changing the tracked synthetic inventory:
+
+```powershell
+python scripts/generate_azure_bootstrap.py
+```
 
 ## Validate the templates without deploying
 

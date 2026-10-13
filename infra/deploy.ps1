@@ -42,11 +42,11 @@ $rng.GetBytes($randomBytes)
 $rng.Dispose()
 $databasePassword = ([System.BitConverter]::ToString($randomBytes)).Replace('-', '').ToLowerInvariant()
 $azureEnvPath = Join-Path $artifactPath 'azure.env'
-$azureEnv = "COMPOSE_PROJECT_NAME=realsite-india`nPOSTGRES_USER=portal`nPOSTGRES_PASSWORD=$databasePassword`nPOSTGRES_DB=portal`nCOOKIE_SECURE=true`nSEED_DEMO=true`nPORTAL_DOMAIN=$Domain`n"
+$azureEnv = "COMPOSE_PROJECT_NAME=realsite-india`nPOSTGRES_USER=portal`nPOSTGRES_PASSWORD=$databasePassword`nPOSTGRES_DB=portal`nCOOKIE_SECURE=true`nSEED_DEMO=false`nPORTAL_DOMAIN=$Domain`n"
 # Do not overwrite deployment secrets on subsequent runs; preserve the DB credentials.
 if (-not (Test-Path -LiteralPath $azureEnvPath)) { [System.IO.File]::WriteAllText($azureEnvPath, $azureEnv) }
 $packagePath = Join-Path $artifactPath 'portal.tar.gz'
-tar -czf $packagePath -C $repoPath compose.yml frontend backend infra
+tar -czf $packagePath -C $repoPath compose.yml frontend backend infra data/azure-postgres-bootstrap.sql
 Assert-Native 'Source package creation'
 $sshTarget = "azureuser@$portalIp"
 Write-Host 'SSH will ask you to verify the new VM host fingerprint on first connection.'
@@ -56,7 +56,7 @@ scp -i $privateKeyPath $packagePath "${sshTarget}:portal/portal.tar.gz"
 Assert-Native 'Source upload'
 scp -i $privateKeyPath $azureEnvPath "${sshTarget}:portal/.env"
 Assert-Native 'Environment upload'
-ssh -i $privateKeyPath $sshTarget 'cd ~/portal && chmod 600 .env && tar -xzf portal.tar.gz && sudo docker compose -f compose.yml -f infra/compose.azure.yml up -d --build'
+ssh -i $privateKeyPath $sshTarget 'cd ~/portal && chmod 600 .env && tar -xzf portal.tar.gz && sudo docker compose -f compose.yml -f infra/compose.azure.yml up -d --build && sudo docker compose -f compose.yml -f infra/compose.azure.yml exec -T db sh -c '"'"'psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB"'"'"' < data/azure-postgres-bootstrap.sql'
 Assert-Native 'Portal startup'
 Write-Host "Deployment started. After DNS propagates, open https://$Domain."
 Write-Host 'Keep artifacts/azure.env private and backed up. This single-VM topology is for evaluation; see docs/AZURE.md.'

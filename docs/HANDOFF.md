@@ -1,6 +1,6 @@
 # RealSite project handoff
 
-Updated: 12 October 2026.
+Updated: 13 October 2026.
 
 RealSite is an India real estate portal built with React, FastAPI, PostgreSQL, Redis and local Docker, with Azure evaluation templates. The accepted release includes the **Find your space. Build your future.** homepage, compact admin analytics, direct-INR synthetic pricing, editable profiles and agent review, India listing/filter workflows, pen drawing and cyan marker hover. The reference screenshots guide the layout; inventory and financing examples remain illustrative.
 
@@ -70,6 +70,12 @@ docker compose cp api:/app/uploads "artifacts/uploads-$backupTag"
 Pause listing/account writes during a backup intended as a consistent restore pair. Verify the dump and photo copy completed before updating. Restore to a separate evaluation stack and validate records/photos before switching users to it. The repository's public demo JSON is not a database backup. Backups, screenshots, local credentials and browser tooling are ignored and excluded from the release.
 
 Compatibility startup upgrades are additive and repeatable. This release adds compatible user profile/active columns and agent_profiles/email_changes/account_audit tables, alongside nullable property `features` JSON and `previous_price`; it preserves existing fields and enriches missing synthetic metadata once. Polygon and original-city context are stored in existing saved-search JSON, requiring no additional schema change. Prefer fixing forward over rolling an older application onto a newer schema without validation.
+
+## Azure database bootstrap
+
+`data/azure-postgres-bootstrap.sql` is the deployment-ready single PostgreSQL file. It creates all ten current application tables and loads the 100 fictional properties, including the current city price ranges. It is safe to run again because each listing has a stable `seed_key`; it never drops/truncates tables or overwrites an existing seed key. It intentionally excludes local accounts, password hashes, sessions, enquiries, saved searches, uploads and private records.
+
+`infra/deploy.ps1` packages the SQL file, starts the Azure VM stack with `SEED_DEMO=false`, then pipes the file to PostgreSQL. For Azure Database for PostgreSQL Flexible Server, run the documented `psql ... -f data/azure-postgres-bootstrap.sql` command in [Azure deployment](AZURE.md). After editing tracked synthetic data, run `python scripts/generate_azure_bootstrap.py`, inspect the resulting SQL diff, and revalidate before release. The SQL is suitable for a fresh/dedicated demo database; do not use it as an upgrade migration for a live customer database.
 
 ## Demonstrate the latest workflows
 

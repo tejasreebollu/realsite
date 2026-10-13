@@ -1,4 +1,12 @@
-# Verification record · release 11 October 2026
+# Verification record · release 13 October 2026
+
+## Azure PostgreSQL bootstrap — 13 October 2026
+
+Created `data/azure-postgres-bootstrap.sql`, a standalone PostgreSQL schema-and-data file generated from the tracked 100-property synthetic export. It defines all ten application tables and inserts the 100 fictional listings with stable seed keys; it contains no accounts, password hashes, sessions, enquiries, saved searches, uploads or private local data. It is designed for a new/dedicated Azure demo database and uses `ON CONFLICT DO NOTHING` for repeated execution.
+
+An isolated PostgreSQL 16 check loaded the file twice. Both loads succeeded, leaving exactly 100 synthetic listings. Sale minima/maxima were verified as Hyderabad ₹2–10 crore, Mumbai ₹5–20 crore, Pune ₹3–12 crore, and Bengaluru/New Delhi ₹3–15 crore. The generated file reports ten table definitions and 100 stable property rows. PowerShell parsing of `infra/deploy.ps1`, Azure Compose syntax with a placeholder domain, Markdown links and whitespace checks passed. No Azure resource, managed database or cloud email service was created or contacted.
+
+`infra/deploy.ps1` now packages the bootstrap file, disables startup demo seeding and imports the file after the Azure VM database starts. This is source/configuration validation only; an Azure deployment and Azure Database for PostgreSQL runtime remain unverified.
 
 ## Requested sale ranges — 12 October 2026
 

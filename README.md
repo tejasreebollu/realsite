@@ -1,6 +1,6 @@
 # RealSite Real Estate Portal · India
 
-Updated: 12 October 2026.
+Updated: 13 October 2026.
 
 RealSite is a working real estate portal for India, with a React interface based on the supplied layout references, a FastAPI API, PostgreSQL persistence, Redis search caching and rate limits, and Docker Compose.
 
@@ -71,7 +71,7 @@ docker compose down
 - **Admin Analytics**: nine charts for listing/enquiry activity, city supply and demand, inventory mix/types, INR pricing, account composition/growth, agent reviews and inventory age. Date/dataset controls, planning signals and aggregate CSV export help guide decisions. Existing listing/account moderation remains available. See [analytics guide](docs/ADMIN-ANALYTICS.md).
 - Home loan EMI calculator with configurable price, down payment, rate, and tenure.
 - Responsive layout, keyboard navigation, modal focus handling, and reduced-motion support.
-- Azure VM infrastructure template, HTTPS Compose overlay, and deployment script.
+- Azure VM infrastructure template, HTTPS Compose overlay, deployment script, and one PostgreSQL schema/demo-inventory bootstrap file.
 
 ## Demo data and remaining parity
 
@@ -80,6 +80,8 @@ The demo seeds **100 fictional listings**, 20 in each of Hyderabad, Bengaluru, M
 RealSite is a functional first version. The reference layouts and core search workflows are implemented; valuations, live listing feeds, verified agent onboarding, lender services, rental applications/payments, notification delivery, advanced moderation, and production operations remain separate work. See [feature scope](docs/SCOPE.md) for the exact boundary.
 
 Set `SEED_DEMO=false` and `DEMO_ACCOUNTS_ENABLED=false` on a fresh database to start without sample inventory or accounts. Disabling demo accounts also rejects their existing sessions. The Azure overlay disables demo logins. Startup preserves edits and archives; the old 120-home seed is upgraded by archiving 20 surplus rows without deleting history.
+
+For Azure PostgreSQL initialization, [data/azure-postgres-bootstrap.sql](data/azure-postgres-bootstrap.sql) is the single portable file that creates every application table and inserts the 100 fictional property listings. It is idempotent and contains no accounts, credentials, sessions, messages, uploads or local user data. See [Azure deployment](docs/AZURE.md).
 
 ## Verify
 
